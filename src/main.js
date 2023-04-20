@@ -1,5 +1,6 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, remote } = require("electron");
 const path = require("path");
+const cookie = require("cookie");
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -23,7 +24,38 @@ const createWindow = () => {
   mainWindow.webContents.openDevTools();
 
   ipcMain.on("login", (event, url) => {
-    console.log(event, url);
+    var dimensions = mainWindow.getSize();
+    let udemyLoginWindow = new BrowserWindow({
+      width: dimensions[0] - 100,
+      height: dimensions[1] - 200,
+      mainWindow,
+      modal: true,
+    });
+
+    udemyLoginWindow.webContents.session.webRequest.onBeforeSendHeaders(
+      { urls: ["*://*.udemy.com/*"] },
+      function (request, callback) {
+        const token = request.requestHeaders.Authorization
+          ? request.requestHeaders.Authorization.split(" ")[1]
+          : cookie.parse(request.requestHeaders.Cookie || "").access_token;
+
+        if (token) {
+          event.returnValue = token;
+          udemyLoginWindow.destroy();
+          // request.webContents.session.clearStorageData();
+          request.webContents.session.webRequest.onBeforeSendHeaders(
+            { urls: ["*://*.udemy.com/*"] },
+            function (request, callback) {
+              callback({ requestHeaders: request.requestHeaders });
+            }
+          );
+          // checkLogin();
+        }
+        callback({ requestHeaders: request.requestHeaders });
+      }
+    );
+    udemyLoginWindow.loadURL(url);
+    // }
   });
 };
 
