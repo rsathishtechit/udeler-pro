@@ -1,8 +1,16 @@
 import React from "react";
 export default function Login() {
   const onLogin = () => {
-    const res = electronAPI.login("https://www.udemy.com/join/login-popup");
-    console.log(res, "token received");
+    const token = electronAPI.login("https://www.udemy.com/join/login-popup");
+    console.log(token, "token received");
+    fetch(
+      `https://udemy.com/api-2.0/users/me/subscribed-courses?page_size=${10}`,
+      {
+        headers: { Authorization: "Bearer " + token },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => console.log(data));
   };
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
