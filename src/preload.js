@@ -3,5 +3,5 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("electronAPI", {
-  login: (url) => ipcRenderer.send("login", url),
+  login: (url) => ipcRenderer.sendSync("login", url),
 });
