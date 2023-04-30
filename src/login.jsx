@@ -1,16 +1,30 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { getDatabase } from "./shared";
+import { ipcRenderer } from "electron";
+const { getRxStorageMemory } = require("rxdb/plugins/storage-memory");
+const { getRxStorageIpcRenderer } = require("rxdb/plugins/electron");
 export default function Login() {
-  const onLogin = () => {
-    const token = electronAPI.login("https://www.udemy.com/join/login-popup");
-    console.log(token, "token received");
-    fetch(
-      `https://udemy.com/api-2.0/users/me/subscribed-courses?page_size=${10}`,
-      {
-        headers: { Authorization: "Bearer " + token },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => console.log(data));
+  const navigate = useNavigate();
+
+  // ipcRenderer.sendSync("login", "https://www.udemy.com/join/login-popup");
+  const onLogin = async () => {
+    const token = ipcRenderer.sendSync(
+      "login",
+      "https://www.udemy.com/join/login-popup"
+    );
+    console.log(token);
+    const storage = getRxStorageIpcRenderer({
+      key: "main-storage",
+      statics: getRxStorageMemory().statics,
+      ipcRenderer: ipcRenderer,
+    });
+
+    const db = await getDatabase("udeler-dev", storage);
+    await db.auth.insert({ token });
+    console.log("inserting hero DONE");
+    db.auth.find().$.subscribe;
+    // navigate("/dashboard", { token });
   };
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">

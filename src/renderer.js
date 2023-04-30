@@ -27,8 +27,6 @@
  */
 
 import "./index.css";
-const { getRxStorageIpcRenderer } = require("rxdb/plugins/electron");
-const { getRxStorageMemory } = require("rxdb/plugins/storage-memory");
 
 console.log(
   '👋 This message is being logged by "renderer.js", included via webpack'
