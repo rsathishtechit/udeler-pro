@@ -24,6 +24,7 @@ async function getDatabase(name, storage) {
   const db = await createRxDatabase({
     name,
     storage,
+    ignoreDuplicate: true,
   });
 
   console.log("creating auth-collection..");

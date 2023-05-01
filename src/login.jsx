@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
+
 import { useNavigate } from "react-router-dom";
-import { getDatabase } from "./shared";
+import { AppContext } from "./context";
 import { ipcRenderer } from "electron";
-const { getRxStorageMemory } = require("rxdb/plugins/storage-memory");
-const { getRxStorageIpcRenderer } = require("rxdb/plugins/electron");
+
 export default function Login() {
   const navigate = useNavigate();
+  const { db } = useContext(AppContext);
 
   // ipcRenderer.sendSync("login", "https://www.udemy.com/join/login-popup");
   const onLogin = async () => {
@@ -14,17 +15,11 @@ export default function Login() {
       "https://www.udemy.com/join/login-popup"
     );
     console.log(token);
-    const storage = getRxStorageIpcRenderer({
-      key: "main-storage",
-      statics: getRxStorageMemory().statics,
-      ipcRenderer: ipcRenderer,
-    });
-
-    const db = await getDatabase("udeler-dev", storage);
+    console.log(db);
     await db.auth.insert({ token });
-    console.log("inserting hero DONE");
-    db.auth.find().$.subscribe;
-    // navigate("/dashboard", { token });
+    // console.log("inserting hero DONE");
+    // db.auth.find().$.subscribe;
+    navigate("/dashboard", { token });
   };
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
