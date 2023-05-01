@@ -1,20 +1,20 @@
-import React from "react";
+import React, { useContext } from "react";
+import { UdemyContext } from "../context";
+import { useNavigate } from "react-router-dom";
 export default function Login() {
+  const { token, setToken } = useContext(UdemyContext);
+  const navigate = useNavigate();
   const onLogin = () => {
     const token = electronAPI.login("https://www.udemy.com/join/login-popup");
+    setToken(token);
     console.log(token, "token received");
-    fetch(
-      `https://udemy.com/api-2.0/users/me/subscribed-courses?page_size=${10}`,
-      {
-        headers: { Authorization: "Bearer " + token },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => console.log(data));
+    navigate("/dashboard");
   };
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        Count:{token}
+        {/* <button onClick={() => setCount(count + 1)}>SetCount</button> */}
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Sign in to your Udemy account
         </h2>
