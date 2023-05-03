@@ -1,11 +1,15 @@
 import React, { useContext } from "react";
 import { UdemyContext } from "../context";
 import { useNavigate } from "react-router-dom";
+import { ipcRenderer } from "electron";
 export default function Login() {
   const { token, setToken } = useContext(UdemyContext);
   const navigate = useNavigate();
   const onLogin = () => {
-    const token = electronAPI.login("https://www.udemy.com/join/login-popup");
+    const token = ipcRenderer.sendSync(
+      "login",
+      "https://www.udemy.com/join/login-popup"
+    );
     setToken(token);
     console.log(token, "token received");
     navigate("/dashboard");

@@ -7,7 +7,7 @@ const Dashboard = () => {
   useEffect(() => {
     fetch(`https://udemy.com/api-2.0/users/me/subscribed-courses`, {
       headers: {
-        Authorization: "Bearer " + `QwroezJaZevXhGjn6sd885D77HfhJO0XW1WayESi`,
+        Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => res.json())
