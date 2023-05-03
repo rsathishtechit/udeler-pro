@@ -1,29 +1,20 @@
 import React, { useContext } from "react";
-
+import { UdemyContext } from "../context";
 import { useNavigate } from "react-router-dom";
-import { AppContext } from "./context";
-import { ipcRenderer } from "electron";
-
 export default function Login() {
+  const { token, setToken } = useContext(UdemyContext);
   const navigate = useNavigate();
-  const { db } = useContext(AppContext);
-
-  // ipcRenderer.sendSync("login", "https://www.udemy.com/join/login-popup");
-  const onLogin = async () => {
-    const token = ipcRenderer.sendSync(
-      "login",
-      "https://www.udemy.com/join/login-popup"
-    );
-    console.log(token);
-    console.log(db);
-    await db.auth.insert({ token });
-    // console.log("inserting hero DONE");
-    // db.auth.find().$.subscribe;
-    navigate("/dashboard", { token });
+  const onLogin = () => {
+    const token = electronAPI.login("https://www.udemy.com/join/login-popup");
+    setToken(token);
+    console.log(token, "token received");
+    navigate("/dashboard");
   };
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        Count:{token}
+        {/* <button onClick={() => setCount(count + 1)}>SetCount</button> */}
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Sign in to your Udemy account
         </h2>
