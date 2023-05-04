@@ -9,16 +9,14 @@ const App = () => {
   const [token, setToken] = React.useState("");
   const [url, setURL] = React.useState("");
   return (
-    <React.StrictMode>
-      <UdemyContext.Provider value={{ token, setToken, url, setURL }}>
-        <HashRouter>
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-          </Routes>
-        </HashRouter>
-      </UdemyContext.Provider>
-    </React.StrictMode>
+    <UdemyContext.Provider value={{ token, setToken, url, setURL }}>
+      <HashRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Routes>
+      </HashRouter>
+    </UdemyContext.Provider>
   );
 };
 

@@ -11,8 +11,8 @@ export default function CourseCard({ course }) {
   const [loading, setLoading] = useState(false);
   const downloader = new Downloader();
 
-  // let { token, url } = useContext(UdemyContext);
-  let token = `e9B87BzxETdyVMMSVlnNdzoEYDi9WKukcJQ8RKkR`;
+  let { token, url } = useContext(UdemyContext);
+
   const fetchCourseData = async () => {
     await fetch(
       `https://www.udemy.com/api-2.0/courses/${
@@ -92,22 +92,20 @@ export default function CourseCard({ course }) {
     <>
       <div className="flex gap-x-4">
         <img
-          className="h-20 w-20 flex-none bg-gray-50"
+          className="h-52 w-4/12 w-full border border-gray-300 bg-white text-gray-300"
           src={course.image_480x270}
           alt=""
         />
-        <div className="min-w-0 flex-auto">
-          <p className="text-sm font-semibold leading-6 text-gray-900">
-            {course.title}
-          </p>
-        </div>
-        <div className="flex flex-none items-center gap-x-4">
-          <button
-            onClick={fetchCourseData}
-            className="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:block"
-          >
-            Download
-          </button>
+        <div className="px-6 py-4 ">
+          <h4 className="text-lg font-bold">{course.title}</h4>
+          <div className="flex items-center gap-x-4 mt-12">
+            <button
+              onClick={fetchCourseData}
+              className=" rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:block"
+            >
+              Download
+            </button>
+          </div>
         </div>
       </div>
     </>

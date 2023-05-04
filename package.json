@@ -1,5 +1,5 @@
 {
-  "name": "udeler",
+  "name": "UdelerPro",
   "productName": "udeler",
   "version": "1.0.0",
   "description": "My Electron application description",
@@ -9,7 +9,8 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
+    "lint": "echo \"No linting configured\"",
+    "debug": "electron-forge start --vscode"
   },
   "keywords": [],
   "author": {
@@ -32,6 +33,7 @@
     "babel-loader": "^9.1.2",
     "css-loader": "^6.0.0",
     "electron": "24.1.2",
+    "electron-devtools-installer": "^3.2.0",
     "node-loader": "^2.0.0",
     "postcss": "^8.4.22",
     "postcss-loader": "^7.2.4",
