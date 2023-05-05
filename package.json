@@ -27,6 +27,7 @@
     "@electron-forge/maker-squirrel": "^6.1.1",
     "@electron-forge/maker-zip": "^6.1.1",
     "@electron-forge/plugin-webpack": "^6.1.1",
+    "@electron-forge/publisher-github": "^6.1.1",
     "@tailwindcss/forms": "^0.5.3",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "autoprefixer": "^10.4.14",
