@@ -1,3 +1,3 @@
-# udeler-pro
+# Udeler-Pro (WIP)
 
-React implementation of Udeler https://github.com/ZeoRexDevs/Udeler_GUI
+React implementation of https://github.com/FaisalUmair/udemy-downloader-gui. 
