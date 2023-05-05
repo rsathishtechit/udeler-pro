@@ -1,6 +1,18 @@
-const { app, BrowserWindow, ipcMain, remote } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const cookie = require("cookie");
+
+const { addRxPlugin } = require("rxdb");
+
+const {
+  default: installExtension,
+  REACT_DEVELOPER_TOOLS,
+} = require("electron-devtools-installer");
+
+const { getRxStorageMemory } = require("rxdb/plugins/storage-memory");
+const { exposeIpcMainRxStorage } = require("rxdb/plugins/electron");
+
+const { getDatabase } = require("./shared");
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -13,6 +25,8 @@ const createWindow = () => {
     width: 800,
     height: 600,
     webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
       webSecurity: false,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
@@ -22,7 +36,15 @@ const createWindow = () => {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.once("dom-ready", async () => {
+    await installExtension([REACT_DEVELOPER_TOOLS])
+      .then((name) => console.log(`Added Extension: ${name}`))
+      .catch((err) => console.log("An error occurred: ", err))
+      .finally(() => {
+        mainWindow.webContents.openDevTools();
+      });
+  });
 
   ipcMain.on("login", (event, url) => {
     var dimensions = mainWindow.getSize();
@@ -63,7 +85,25 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", () => {
+app.on("ready", async function () {
+  const storage = getRxStorageMemory();
+
+  exposeIpcMainRxStorage({
+    key: "main-storage",
+    storage,
+    ipcMain: ipcMain,
+  });
+
+  const db = await getDatabase("udeler-dev", storage);
+
+  // show heroes table in console
+  db.auth
+    .find()
+    .sort("token")
+    .$.subscribe((authDocs) => {
+      console.log("### got heroes(" + authDocs.length + "):");
+      authDocs.forEach((doc) => console.log(doc.token));
+    });
   createWindow();
 });
 

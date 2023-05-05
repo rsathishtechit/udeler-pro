@@ -1,16 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
+import { UdemyContext } from "../context";
+import { useNavigate } from "react-router-dom";
+import { ipcRenderer } from "electron";
 export default function Login() {
+  const { token, setToken } = useContext(UdemyContext);
+  const navigate = useNavigate();
   const onLogin = () => {
-    const token = electronAPI.login("https://www.udemy.com/join/login-popup");
-    console.log(token, "token received");
-    fetch(
-      `https://udemy.com/api-2.0/users/me/subscribed-courses?page_size=${10}`,
-      {
-        headers: { Authorization: "Bearer " + token },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => console.log(data));
+    const token = ipcRenderer.sendSync(
+      "login",
+      "https://www.udemy.com/join/login-popup"
+    );
+    setToken(token);
+    navigate("/dashboard");
   };
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -33,16 +34,6 @@ export default function Login() {
             Sign in
           </button>
         </div>
-
-        <p className="mt-10 text-center text-sm text-gray-500">
-          Not a member?{" "}
-          <a
-            href="#"
-            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-          >
-            Start a 14 day free trial
-          </a>
-        </p>
       </div>
     </div>
   );

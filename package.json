@@ -1,5 +1,5 @@
 {
-  "name": "udeler",
+  "name": "UdelerPro",
   "productName": "udeler",
   "version": "1.0.0",
   "description": "My Electron application description",
@@ -9,7 +9,8 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
+    "lint": "echo \"No linting configured\"",
+    "debug": "electron-forge start --vscode"
   },
   "keywords": [],
   "author": {
@@ -26,12 +27,14 @@
     "@electron-forge/maker-squirrel": "^6.1.1",
     "@electron-forge/maker-zip": "^6.1.1",
     "@electron-forge/plugin-webpack": "^6.1.1",
+    "@electron-forge/publisher-github": "^6.1.1",
     "@tailwindcss/forms": "^0.5.3",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "autoprefixer": "^10.4.14",
     "babel-loader": "^9.1.2",
     "css-loader": "^6.0.0",
     "electron": "24.1.2",
+    "electron-devtools-installer": "^3.2.0",
     "node-loader": "^2.0.0",
     "postcss": "^8.4.22",
     "postcss-loader": "^7.2.4",
@@ -41,10 +44,13 @@
   "dependencies": {
     "@headlessui/react": "^1.7.14",
     "@heroicons/react": "^2.0.17",
-    "axios": "^1.3.6",
     "electron-squirrel-startup": "^1.0.0",
+    "mkdirp": "^3.0.1",
+    "mt-files-downloader": "github:FaisalUmair/mt-files-downloader-wrapper",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.10.0"
+    "react-router-dom": "^6.10.0",
+    "rxdb": "^14.8.3",
+    "rxjs": "^7.8.0"
   }
 }
