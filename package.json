@@ -1,8 +1,8 @@
 {
-  "name": "UdelerPro",
+  "name": "udeler-pro",
   "productName": "udeler",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "Udemy desktop client to download courses",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
@@ -14,8 +14,12 @@
   },
   "keywords": [],
   "author": {
-    "name": "CP-ThinkDigital",
-    "email": "coderplaysmarketing@gmail.com"
+    "name": "Sathishkumar R",
+    "email": "rsathishtechit@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rsathishtechit/udeler-pro.git"
   },
   "license": "MIT",
   "devDependencies": {
@@ -42,6 +46,8 @@
     "tailwindcss": "^3.3.1"
   },
   "dependencies": {
+    "@electron-forge/maker-dmg": "^6.1.1",
+    "@electron/asar": "^3.2.4",
     "@headlessui/react": "^1.7.14",
     "@heroicons/react": "^2.0.17",
     "electron-squirrel-startup": "^1.0.0",

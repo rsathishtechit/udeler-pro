@@ -2,17 +2,12 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const cookie = require("cookie");
 
-const { addRxPlugin } = require("rxdb");
+// const { addRxPlugin } = require("rxdb");
 
-const {
-  default: installExtension,
-  REACT_DEVELOPER_TOOLS,
-} = require("electron-devtools-installer");
+// const { getRxStorageMemory } = require("rxdb/plugins/storage-memory");
+// const { exposeIpcMainRxStorage } = require("rxdb/plugins/electron");
 
-const { getRxStorageMemory } = require("rxdb/plugins/storage-memory");
-const { exposeIpcMainRxStorage } = require("rxdb/plugins/electron");
-
-const { getDatabase } = require("./shared");
+// const { getDatabase } = require("./shared");
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -35,17 +30,6 @@ const createWindow = () => {
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
-  mainWindow.webContents.once("dom-ready", async () => {
-    await installExtension([REACT_DEVELOPER_TOOLS])
-      .then((name) => console.log(`Added Extension: ${name}`))
-      .catch((err) => console.log("An error occurred: ", err))
-      .finally(() => {
-        mainWindow.webContents.openDevTools();
-      });
-  });
-
   ipcMain.on("login", (event, url) => {
     var dimensions = mainWindow.getSize();
     let udemyLoginWindow = new BrowserWindow({
@@ -65,7 +49,7 @@ const createWindow = () => {
         if (token) {
           event.returnValue = token;
           udemyLoginWindow.destroy();
-          // request.webContents.session.clearStorageData();
+          request.webContents.session.clearStorageData();
           request.webContents.session.webRequest.onBeforeSendHeaders(
             { urls: ["*://*.udemy.com/*"] },
             function (request, callback) {
@@ -86,24 +70,24 @@ const createWindow = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async function () {
-  const storage = getRxStorageMemory();
+  // const storage = getRxStorageMemory();
 
-  exposeIpcMainRxStorage({
-    key: "main-storage",
-    storage,
-    ipcMain: ipcMain,
-  });
+  // exposeIpcMainRxStorage({
+  //   key: "main-storage",
+  //   storage,
+  //   ipcMain: ipcMain,
+  // });
 
-  const db = await getDatabase("udeler-dev", storage);
+  // const db = await getDatabase("udeler-dev", storage);
 
   // show heroes table in console
-  db.auth
-    .find()
-    .sort("token")
-    .$.subscribe((authDocs) => {
-      console.log("### got heroes(" + authDocs.length + "):");
-      authDocs.forEach((doc) => console.log(doc.token));
-    });
+  // db.auth
+  //   .find()
+  //   .sort("token")
+  //   .$.subscribe((authDocs) => {
+  //     console.log("### got heroes(" + authDocs.length + "):");
+  //     authDocs.forEach((doc) => console.log(doc.token));
+  //   });
   createWindow();
 });
 
