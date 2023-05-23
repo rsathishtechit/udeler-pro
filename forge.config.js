@@ -11,6 +11,10 @@ module.exports = {
       platforms: ["darwin"],
     },
     {
+      name: "@electron-forge/maker-dmg",
+      platforms: ["darwin"],
+    },
+    {
       name: "@electron-forge/maker-deb",
       config: {},
     },
@@ -38,6 +42,18 @@ module.exports = {
             },
           ],
         },
+      },
+    },
+  ],
+  publishers: [
+    {
+      name: "@electron-forge/publisher-github",
+      config: {
+        repository: {
+          owner: "rsathishtechit",
+          name: "udeler-pro",
+        },
+        prerelease: true,
       },
     },
   ],
