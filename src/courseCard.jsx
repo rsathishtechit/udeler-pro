@@ -39,7 +39,6 @@ export default function CourseCard({ course }) {
         let num = 1;
         results.forEach((item, index) => {
           if (item._class === "chapter") {
-            // debugger;
             current = index;
             courseData[index] = {};
             courseData[index]["meta"] = item;
@@ -71,7 +70,10 @@ export default function CourseCard({ course }) {
               )
                 .then((res) => res.json())
                 .then(({ asset }) => {
-                  let lecturePath = join(sectionPath, asset.filename);
+                  let lecturePath = join(
+                    sectionPath,
+                    lecture + "." + lectureData.title
+                  );
                   if (asset.media_sources[0].type === "video/mp4") {
                     mkdirp(sectionPath).then(() => {
                       const download = downloader.download(
