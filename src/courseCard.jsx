@@ -36,7 +36,6 @@ export default function CourseCard({ course }) {
       .then(({ results }) => {
         const courseData = {};
         let current;
-        let num = 1;
         results.forEach((item, index) => {
           if (item._class === "chapter") {
             current = index;
@@ -49,9 +48,15 @@ export default function CourseCard({ course }) {
           }
         });
         let homePath = join(homedir(), `Downloads/udeler/${course.title}`);
+        let num = 0;
+
         for (const section in courseData) {
+          num++;
           const sectionData = courseData[section];
-          let sectionPath = join(homePath, sectionData.meta.title);
+          let sectionPath = join(
+            homePath,
+            num + "." + sectionData.meta.title.replace(/[/\\?%*:|"<>]/g, "-")
+          );
 
           for (const lecture in sectionData.lectures) {
             const lectureData = sectionData.lectures[lecture];
@@ -72,7 +77,11 @@ export default function CourseCard({ course }) {
                 .then(({ asset }) => {
                   let lecturePath = join(
                     sectionPath,
-                    lecture + "." + lectureData.title
+                    parseInt(lecture) +
+                      1 +
+                      "-" +
+                      lectureData.title.replace(/[/\\?%*:|"<>]/g, "-") +
+                      ".mp4"
                   );
                   if (asset.media_sources[0].type === "video/mp4") {
                     mkdirp(sectionPath).then(() => {
