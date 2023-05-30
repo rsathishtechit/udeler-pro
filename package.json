@@ -54,6 +54,7 @@
     "mkdirp": "^3.0.1",
     "mt-files-downloader": "github:FaisalUmair/mt-files-downloader-wrapper",
     "react": "^18.2.0",
+    "react-circular-progressbar": "^2.1.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.10.0",
     "rxdb": "^14.8.3",

@@ -25,7 +25,7 @@ const Dashboard = () => {
       `https://udemy.com/api-2.0/users/me/subscribed-courses?&page=${state.page}&page_size=${state.limit}`,
       {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer Y4XZZZlhAZqwTAY2h18J3ukdgWxRYBVoxdTtrYiN`,
         },
       }
     )
