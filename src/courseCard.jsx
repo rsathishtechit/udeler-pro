@@ -11,6 +11,8 @@ import { getDownloadSpeed } from "./utils";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
+const downloader = new Downloader();
+
 const initialState = {
   download: false,
   pause: true,
@@ -60,7 +62,6 @@ export default function CourseCard({ course }) {
 
   const [loading, setLoading] = useState(false);
   const [download, setD] = useState(false);
-  const downloader = new Downloader();
 
   let { token, url } = useContext(UdemyContext);
 
