@@ -1,4 +1,4 @@
-import React, { useContext, useState, useReducer } from "react";
+import React, { useContext, useState, useReducer, useCallback } from "react";
 
 import { UdemyContext } from "../context";
 
@@ -11,8 +11,6 @@ import { getDownloadSpeed } from "./utils";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
-const downloader = new Downloader();
-
 const initialState = {
   download: false,
   pause: true,
@@ -22,7 +20,7 @@ const initialState = {
   completedPercentage: 0,
 };
 
-function disableReducer(state = initialState, action) {
+function downloadReducer(state = initialState, action) {
   switch (action.type) {
     case "download":
       return {
@@ -42,26 +40,31 @@ function disableReducer(state = initialState, action) {
         resume: !state.resume,
         pause: !state.pause,
       };
-    case "total-lectures":
+    case "total":
       return {
         ...state,
         totalLectures: action.payload,
       };
-    case "completed-lectures":
-      return {
+    case "completed":
+      const current = {
         ...state,
         completedLectures: state.completedLectures + 1,
-        completedPercentage:
-          (state.completedLectures / state.totalLectures) * 100,
       };
+      return {
+        ...current,
+        completedPercentage:
+          (current.completedLectures / current.totalLectures) * 100,
+      };
+    default:
+      return state;
   }
 }
 
 export default function CourseCard({ course }) {
-  const [downloadState, dispatch] = useReducer(disableReducer, initialState);
+  const [downloadState, dispatch] = useReducer(downloadReducer, initialState);
 
   const [loading, setLoading] = useState(false);
-  const [download, setD] = useState(false);
+  const [downloader] = useState(() => new Downloader());
 
   let { token, url } = useContext(UdemyContext);
 
@@ -106,14 +109,13 @@ export default function CourseCard({ course }) {
             courseData[index] = {};
             courseData[index]["meta"] = item;
           } else if (item._class === "lecture") {
-            lectureCount++;
+            lectureCount += 1;
             if (courseData[current]["lectures"] === undefined)
               courseData[current]["lectures"] = {};
             courseData[current]["lectures"][index] = item;
           }
         });
-
-        dispatch({ type: "total-lectures", payload: lectureCount });
+        dispatch({ type: "total", payload: lectureCount });
 
         let homePath = join(homedir(), `Downloads/udeler/${course.title}`);
         let num = 0;
@@ -170,11 +172,14 @@ export default function CourseCard({ course }) {
                       });
 
                       var timer = setInterval(function () {
-                        if (download.status == -2) {
-                          console.log("Download " + num + " stopped.");
-                        } else if (download.status == -3) {
-                          console.log("Download " + num + " destroyed.");
-                        }
+                        // Status:
+                        //   -3 = destroyed
+                        //   -2 = stopped
+                        //   -1 = error
+                        //   0 = not started
+                        //   1 = started (downloading)
+                        //   2 = error, retrying
+                        //   3 = finished
 
                         if (
                           download.status === -1 ||
@@ -209,9 +214,8 @@ export default function CourseCard({ course }) {
                       });
                       download.on("end", function () {
                         dispatch({
-                          type: "completed-lectures",
+                          type: "completed",
                         });
-
                         console.log(
                           "EVENT - Download " + num + " end " + download.status
                         );
