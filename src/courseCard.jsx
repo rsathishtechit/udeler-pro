@@ -12,9 +12,9 @@ import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
 const initialState = {
-  download: false,
-  pause: true,
-  resume: true,
+  download: true,
+  pause: false,
+  resume: false,
   totalLectures: 0,
   completedLectures: 0,
   completedPercentage: 0,
@@ -25,20 +25,20 @@ function disableReducer(state = initialState, action) {
     case "download":
       return {
         ...state,
-        download: !state.download,
-        pause: !state.pause,
+        download: false,
+        pause: true,
       };
     case "pause":
       return {
         ...state,
-        pause: !state.pause,
-        resume: !state.resume,
+        pause: false,
+        resume: true,
       };
     case "resume":
       return {
         ...state,
-        resume: !state.resume,
-        pause: !state.pause,
+        resume: false,
+        pause: true,
       };
     case "total-lectures":
       return {
@@ -65,9 +65,12 @@ export default function CourseCard({ course }) {
   let { token, url } = useContext(UdemyContext);
 
   const pauseDownload = () => {
-    downloader._downloads.forEach((dl) => dl.stop());
     dispatch({
       type: "pause",
+    });
+    downloader._downloads.forEach((dl) => {
+      console.log(dl);
+      dl.stopDownload();
     });
   };
 
@@ -163,12 +166,31 @@ export default function CourseCard({ course }) {
 
                       // Set download options
                       download.setOptions({
-                        threadsCount: 1, // Default: 2, Set the total number of download threads
+                        threadsCount: 6, // Default: 2, Set the total number of download threads
                         timeout: 5000, // Default: 5000, If no data is received, the download times out (milliseconds)
                         range: "0-100", // Default: 0-100, Control the part of file that needs to be downloaded.
                       });
 
                       var timer = setInterval(function () {
+                        // Status:
+                        //   -3 = destroyed
+                        //   -2 = stopped
+                        //   -1 = error
+                        //   0 = not started
+                        //   1 = started (downloading)
+                        //   2 = error, retrying
+                        //   3 = finished
+
+                        if (downloadState.resume) {
+                          console.log("pause", downloadState.pause);
+                          console.log("resume", downloadState.resume);
+                          download.resume();
+                        }
+                        if (downloadState.pause) {
+                          // console.log("pause", downloadState.pause);
+                          // console.log("resume", downloadState.resume);
+                          download.stop();
+                        }
                         if (download.status == -2) {
                           console.log("Download " + num + " stopped.");
                         } else if (download.status == -3) {
@@ -184,11 +206,10 @@ export default function CourseCard({ course }) {
                           timer = null;
                         }
                         if (download.status === 1) {
-                          const stats = download.getStats();
-                          var download_speed_and_unit = getDownloadSpeed(
-                            parseInt(stats.present.speed / 1000) || 0
-                          );
-
+                          // const stats = download.getStats();
+                          // var download_speed_and_unit = getDownloadSpeed(
+                          //   parseInt(stats.present.speed / 1000) || 0
+                          // );
                           // console.log(
                           //   download_speed_and_unit,
                           //   stats.total,
@@ -201,18 +222,24 @@ export default function CourseCard({ course }) {
                         console.log("EVENT - Download " + error + " error !");
                         console.log(download.error);
                       });
-                      download.on("progress", function (progress) {
-                        console.log(
-                          "EVENT - Download " + num + " progress " + progress
-                        );
-                      });
+                      // download.on("progress", function (progress) {
+                      //   console.log(
+                      //     "EVENT - Download " +
+                      //       download.filePath +
+                      //       " progress " +
+                      //       progress
+                      //   );
+                      // });
                       download.on("end", function () {
                         dispatch({
                           type: "completed-lectures",
                         });
 
                         console.log(
-                          "EVENT - Download " + num + " end " + download.status
+                          "EVENT - Download " +
+                            download.filePath +
+                            " end " +
+                            download.status
                         );
                       });
                     });
@@ -239,7 +266,7 @@ export default function CourseCard({ course }) {
               type="button"
               className="relative inline-flex items-center rounded-l-md bg-white px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 disabled:opacity-25"
               onClick={fetchCourseData}
-              disabled={downloadState.download}
+              disabled={!downloadState.download}
             >
               <span className="sr-only">Download</span>
               <svg
@@ -262,7 +289,7 @@ export default function CourseCard({ course }) {
               type="button"
               className="relative -ml-px inline-flex items-center rounded-r-md bg-white px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 disabled:opacity-25"
               onClick={pauseDownload}
-              disabled={downloadState.pause}
+              disabled={!downloadState.pause}
             >
               <span className="sr-only">Pause</span>
               <svg
@@ -285,7 +312,7 @@ export default function CourseCard({ course }) {
               type="button"
               className="relative -ml-px inline-flex items-center rounded-r-md bg-white px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 disabled:opacity-25"
               onClick={resumeDownload}
-              disabled={downloadState.resume}
+              disabled={!downloadState.resume}
             >
               <span className="sr-only">Resume</span>
               <svg
@@ -306,11 +333,11 @@ export default function CourseCard({ course }) {
           </span>
         </div>
         <div className="flex-1 justify-items-end py-4 px-4">
-          {downloadState.download && (
+          {!downloadState.download && (
             <div style={{ width: 50, height: 50, float: "right" }}>
               <CircularProgressbar
                 value={downloadState.completedPercentage}
-                text={parseInt(downloadState.completedPercentage) + "%"}
+                text={Math.ceil(downloadState.completedPercentage) + "%"}
               />
             </div>
           )}
