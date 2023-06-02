@@ -22,10 +22,10 @@ const Dashboard = () => {
   const { token } = useContext(UdemyContext);
   const loadCourses = async () => {
     await fetch(
-      `https://udemy.com/api-2.0/users/me/subscribed-courses?&page=${state.page}&page_size=${state.limit}`,
+      `https://udemy.com/api-2.0/users/me/subscribed-courses?&page=${state.page}&page_size=${state.limit}&ordering=-last_accessed`,
       {
         headers: {
-          Authorization: `Bearer Y4XZZZlhAZqwTAY2h18J3ukdgWxRYBVoxdTtrYiN`,
+          Authorization: `Bearer og6TNmps8dGgijC8RpMu09LvcfUXTjdnWjHKBXIR`,
         },
       }
     )
