@@ -1,4 +1,5 @@
-import React, { useContext, useState, useReducer, useEffect } from "react";
+import React, { useContext, useState, useReducer } from "react";
+
 
 import { UdemyContext } from "../context";
 
@@ -15,19 +16,28 @@ import { getDownloadSpeed } from "./utils/utils";
 import { join } from "path";
 const { homedir } = require("os");
 import fs, { mkdirp } from "fs-extra";
+
 import CoureseDetail from "./courseDetail";
+
 
 export default function CourseCard({ course }) {
   const [downloadState, dispatch] = useReducer(downloadReducer, initialState);
   const [downloader] = useState(() => new Downloader());
 
   const [courseData, lectureCount] = useFetchCourseData(course.id);
+
   const [currentCID, setCurrentCID] = useState();
 
   const [lectureStatus, setLectureStatus] = useState({});
   const [progress, setProgress] = useState(0);
 
   const [fetchLectureData] = useFetchLectureData();
+
+
+  const [fetchLectureData] = useFetchLectureData();
+
+  let { token, url } = useContext(UdemyContext);
+
 
   let { token, url } = useContext(UdemyContext);
   console.log(lectureStatus);
@@ -68,6 +78,7 @@ export default function CourseCard({ course }) {
         const lectureData = sectionData.lectures[lecture];
         const type = sectionData.lectures[lecture].asset.asset_type;
         console.log(type);
+
         setLectureStatus((prev) => ({
           ...prev,
           [lectureData.id]: { title: lectureData.title },
@@ -177,11 +188,16 @@ export default function CourseCard({ course }) {
             });
           });
         }
+
+        const data = await fetchLectureData(course.id, lectureData.id, type);
+        console.log(data);
+
       }
     }
   };
 
   return (
+
     <div className="flex-coulumn gap-x-4">
       <div className="flex-1 ">
         <div className="flex gap-x-4">
@@ -199,6 +215,7 @@ export default function CourseCard({ course }) {
                 className="relative inline-flex items-center rounded-l-md bg-white px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 disabled:opacity-25"
                 onClick={downloadCourse}
                 disabled={downloadState.download}
+
               >
                 <span className="sr-only">Download</span>
                 <svg
