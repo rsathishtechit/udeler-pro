@@ -1,70 +1,28 @@
-import React, { useContext, useState, useReducer, useCallback } from "react";
+import React, { useContext, useState, useReducer } from "react";
 
 import { UdemyContext } from "../context";
 
-import { mkdirp } from "fs-extra";
-import { join } from "path";
 import Downloader from "mt-files-downloader";
-const { homedir } = require("os");
-import { getDownloadSpeed } from "./utils";
 
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
-const initialState = {
-  download: false,
-  pause: true,
-  resume: true,
-  totalLectures: 0,
-  completedLectures: 0,
-  completedPercentage: 0,
-};
+import { initialState, downloadReducer } from "./store/downloadReducer";
+import useFetchCourseData from "./hooks/useFetchCourseData";
+import useFetchLectureData from "./hooks/useFetchLectureData";
+import { getDownloadSpeed } from "./utils/utils";
 
-function downloadReducer(state = initialState, action) {
-  switch (action.type) {
-    case "download":
-      return {
-        ...state,
-        download: !state.download,
-        pause: !state.pause,
-      };
-    case "pause":
-      return {
-        ...state,
-        pause: !state.pause,
-        resume: !state.resume,
-      };
-    case "resume":
-      return {
-        ...state,
-        resume: !state.resume,
-        pause: !state.pause,
-      };
-    case "total":
-      return {
-        ...state,
-        totalLectures: action.payload,
-      };
-    case "completed":
-      const current = {
-        ...state,
-        completedLectures: state.completedLectures + 1,
-      };
-      return {
-        ...current,
-        completedPercentage:
-          (current.completedLectures / current.totalLectures) * 100,
-      };
-    default:
-      return state;
-  }
-}
+import { join } from "path";
+const { homedir } = require("os");
+import fs, { mkdirp } from "fs-extra";
 
 export default function CourseCard({ course }) {
   const [downloadState, dispatch] = useReducer(downloadReducer, initialState);
-
-  const [loading, setLoading] = useState(false);
   const [downloader] = useState(() => new Downloader());
+
+  const [courseData, lectureCount] = useFetchCourseData(course.id);
+
+  const [fetchLectureData] = useFetchLectureData();
 
   let { token, url } = useContext(UdemyContext);
 
@@ -82,151 +40,33 @@ export default function CourseCard({ course }) {
     });
   };
 
-  const fetchCourseData = async () => {
-    dispatch({
-      type: "download",
-    });
+  const downloadCourse = async () => {
+    console.log("courseData", courseData);
+    dispatch({ type: "download" });
+    dispatch({ type: "total", payload: lectureCount });
 
-    await fetch(
-      `https://www.udemy.com/api-2.0/courses/${
-        course.id
-      }/cached-subscriber-curriculum-items?page_size=10000&q=${Date.now()}`,
-      {
-        headers: {
-          // Authorization: `Bearer ${token}`,
-          Authorization: `Bearer Y4XZZZlhAZqwTAY2h18J3ukdgWxRYBVoxdTtrYiN`,
-        },
+    let homePath = join(homedir(), `Downloads/udeler/${course.title}`);
+    let num = 0;
+
+    for (const section in courseData) {
+      num++;
+      const sectionData = courseData[section];
+
+      console.log("sectionData", sectionData);
+
+      let sectionPath = join(
+        homePath,
+        num + "." + sectionData.meta.title.replace(/[/\\?%*:|"<>]/g, "-")
+      );
+
+      for (const lecture in sectionData.lectures) {
+        const lectureData = sectionData.lectures[lecture];
+        const type = sectionData.lectures[lecture].asset.asset_type;
+        console.log(type);
+        const data = await fetchLectureData(course.id, lectureData.id, type);
+        console.log(data);
       }
-    )
-      .then((res) => res.json())
-      .then(({ results }) => {
-        const courseData = {};
-        let current;
-        let lectureCount = 0;
-        results.forEach((item, index) => {
-          if (item._class === "chapter") {
-            current = index;
-            courseData[index] = {};
-            courseData[index]["meta"] = item;
-          } else if (item._class === "lecture") {
-            lectureCount += 1;
-            if (courseData[current]["lectures"] === undefined)
-              courseData[current]["lectures"] = {};
-            courseData[current]["lectures"][index] = item;
-          }
-        });
-        dispatch({ type: "total", payload: lectureCount });
-
-        let homePath = join(homedir(), `Downloads/udeler/${course.title}`);
-        let num = 0;
-
-        for (const section in courseData) {
-          num++;
-          const sectionData = courseData[section];
-          let sectionPath = join(
-            homePath,
-            num + "." + sectionData.meta.title.replace(/[/\\?%*:|"<>]/g, "-")
-          );
-
-          for (const lecture in sectionData.lectures) {
-            const lectureData = sectionData.lectures[lecture];
-            if (lectureData.asset.asset_type.toLowerCase() === "video") {
-              fetch(
-                `https://udemy.com/api-2.0/users/me/subscribed-courses/${
-                  course.id
-                }/lectures/${
-                  lectureData.id
-                }?fields[lecture]=asset,supplementary_assets&fields[asset]=stream_urls,download_urls,captions,title,filename,data,body,media_sources,media_license_token&q=${Date.now()}`,
-                {
-                  headers: {
-                    Authorization: `Bearer Y4XZZZlhAZqwTAY2h18J3ukdgWxRYBVoxdTtrYiN`,
-                  },
-                }
-              )
-                .then((res) => res.json())
-                .then(({ asset }) => {
-                  let lecturePath = join(
-                    sectionPath,
-                    parseInt(lecture) +
-                      1 +
-                      "-" +
-                      lectureData.title.replace(/[/\\?%*:|"<>]/g, "-") +
-                      ".mp4"
-                  );
-                  if (asset.media_sources[0].type === "video/mp4") {
-                    mkdirp(sectionPath).then(() => {
-                      const download = downloader.download(
-                        asset.media_sources[0]["src"],
-                        lecturePath
-                      );
-                      download.setRetryOptions({
-                        maxRetries: 3, // Default: 5
-                        retryInterval: 3000, // Default: 2000
-                      });
-
-                      // Set download options
-                      download.setOptions({
-                        threadsCount: 1, // Default: 2, Set the total number of download threads
-                        timeout: 5000, // Default: 5000, If no data is received, the download times out (milliseconds)
-                        range: "0-100", // Default: 0-100, Control the part of file that needs to be downloaded.
-                      });
-
-                      var timer = setInterval(function () {
-                        // Status:
-                        //   -3 = destroyed
-                        //   -2 = stopped
-                        //   -1 = error
-                        //   0 = not started
-                        //   1 = started (downloading)
-                        //   2 = error, retrying
-                        //   3 = finished
-
-                        if (
-                          download.status === -1 ||
-                          download.status === 3 ||
-                          download.status === -3
-                        ) {
-                          clearInterval(timer);
-                          timer = null;
-                        }
-                        if (download.status === 1) {
-                          const stats = download.getStats();
-                          var download_speed_and_unit = getDownloadSpeed(
-                            parseInt(stats.present.speed / 1000) || 0
-                          );
-
-                          // console.log(
-                          //   download_speed_and_unit,
-                          //   stats.total,
-                          //   stats.total.completed
-                          // );
-                        }
-                      }, 1000);
-                      download.start();
-                      download.on("error", function (error) {
-                        console.log("EVENT - Download " + error + " error !");
-                        console.log(download.error);
-                      });
-                      download.on("progress", function (progress) {
-                        console.log(
-                          "EVENT - Download " + num + " progress " + progress
-                        );
-                      });
-                      download.on("end", function () {
-                        dispatch({
-                          type: "completed",
-                        });
-                        console.log(
-                          "EVENT - Download " + num + " end " + download.status
-                        );
-                      });
-                    });
-                  }
-                });
-            }
-          }
-        }
-      });
+    }
   };
 
   return (
@@ -243,7 +83,7 @@ export default function CourseCard({ course }) {
             <button
               type="button"
               className="relative inline-flex items-center rounded-l-md bg-white px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 disabled:opacity-25"
-              onClick={fetchCourseData}
+              onClick={downloadCourse}
               disabled={downloadState.download}
             >
               <span className="sr-only">Download</span>
