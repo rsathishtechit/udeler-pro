@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { UdemyContext } from "../../context";
 
 export default function useFetchCourseData(courseId) {
   const [courseData, setCourseData] = useState([]);
   const [lectureCount, setLectureCount] = useState([]);
+  const { token } = useContext(UdemyContext);
 
   const fetchCourseData = async () => {
     await fetch(
       `https://www.udemy.com/api-2.0/courses/${courseId}/cached-subscriber-curriculum-items?page_size=10000&q=${Date.now()}`,
       {
         headers: {
-          // Authorization: `Bearer ${token}`,
-          Authorization: `Bearer og6TNmps8dGgijC8RpMu09LvcfUXTjdnWjHKBXIR`,
+          Authorization: `Bearer ${token}`,
+          // Authorization: `Bearer og6TNmps8dGgijC8RpMu09LvcfUXTjdnWjHKBXIR`,
         },
       }
     )

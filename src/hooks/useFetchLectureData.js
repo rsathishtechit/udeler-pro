@@ -1,11 +1,15 @@
+import { useContext } from "react";
 import { assetTypes } from "../constants/assetTypes";
+import { UdemyContext } from "../../context";
 export default function useFetchLectureData() {
+  const { token } = useContext(UdemyContext);
+
   const fetchLectureData = async (courseId, lectureId, type) => {
     const lectureData = await fetch(
       `https://udemy.com/api-2.0/users/me/subscribed-courses/${courseId}/lectures/${lectureId}?fields[lecture]=asset,supplementary_assets&fields[asset]=stream_urls,download_urls,captions,title,filename,data,body,media_sources,media_license_token&q=${Date.now()}`,
       {
         headers: {
-          Authorization: `Bearer og6TNmps8dGgijC8RpMu09LvcfUXTjdnWjHKBXIR`,
+          Authorization: `Bearer ${token}`,
         },
       }
     );
