@@ -24,6 +24,11 @@ export default function useFetchLectureData() {
         let videos = data.asset.media_sources.filter(
           (asset) => asset.type === "video/mp4"
         );
+        if (videos.length === 0) {
+          videos = data.asset.stream_urls["Video"]
+            .filter((asset) => asset.type === "video/mp4")
+            .map((video) => ({ ...video, src: video.file }));
+        }
         if (videos.length === 0) return { ...response, encrypted: true };
         return { encrypted: false, url: videos[0].src, ...response };
       }
