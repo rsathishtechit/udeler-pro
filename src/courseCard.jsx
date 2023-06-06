@@ -82,7 +82,6 @@ export default function CourseCard({ course }) {
         );
 
         if (data.type === "Video" && !data.encrypted) {
-          console.log("dfdfdfdfd");
           mkdirp(sectionPath).then(() => {
             const download = downloader.download(data.url, lecturePath);
 
@@ -130,12 +129,6 @@ export default function CourseCard({ course }) {
                     status: stats.total.completed,
                   },
                 }));
-
-                console.log(
-                  download_speed_and_unit,
-                  stats.total,
-                  stats.total.completed
-                );
               }
             }, 1000);
             download.start();
