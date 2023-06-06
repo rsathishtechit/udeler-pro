@@ -1,6 +1,5 @@
 import React, { useContext, useState, useReducer } from "react";
 
-
 import { UdemyContext } from "../context";
 
 import Downloader from "mt-files-downloader";
@@ -19,28 +18,16 @@ import fs, { mkdirp } from "fs-extra";
 
 import CoureseDetail from "./courseDetail";
 
-
 export default function CourseCard({ course }) {
   const [downloadState, dispatch] = useReducer(downloadReducer, initialState);
   const [downloader] = useState(() => new Downloader());
 
   const [courseData, lectureCount] = useFetchCourseData(course.id);
-
-  const [currentCID, setCurrentCID] = useState();
-
   const [lectureStatus, setLectureStatus] = useState({});
-  const [progress, setProgress] = useState(0);
-
-  const [fetchLectureData] = useFetchLectureData();
-
-
   const [fetchLectureData] = useFetchLectureData();
 
   let { token, url } = useContext(UdemyContext);
 
-
-  let { token, url } = useContext(UdemyContext);
-  console.log(lectureStatus);
   const pauseDownload = () => {
     downloader._downloads.forEach((dl) => dl.stop());
     dispatch({
@@ -83,8 +70,8 @@ export default function CourseCard({ course }) {
           ...prev,
           [lectureData.id]: { title: lectureData.title },
         }));
-        const data = await fetchLectureData(course.id, lectureData.id, type);
 
+        const data = await fetchLectureData(course.id, lectureData.id, type);
         console.log(data);
 
         let lecturePath = join(
@@ -97,6 +84,7 @@ export default function CourseCard({ course }) {
         );
 
         if (data.type === "Video" && !data.encrypted) {
+          console.log("dfdfdfdfd");
           mkdirp(sectionPath).then(() => {
             const download = downloader.download(data.url, lecturePath);
 
@@ -144,7 +132,6 @@ export default function CourseCard({ course }) {
                     status: stats.total.completed,
                   },
                 }));
-                // setProgress(stats.total.completed);
 
                 console.log(
                   download_speed_and_unit,
@@ -188,16 +175,11 @@ export default function CourseCard({ course }) {
             });
           });
         }
-
-        const data = await fetchLectureData(course.id, lectureData.id, type);
-        console.log(data);
-
       }
     }
   };
 
   return (
-
     <div className="flex-coulumn gap-x-4">
       <div className="flex-1 ">
         <div className="flex gap-x-4">
@@ -215,7 +197,6 @@ export default function CourseCard({ course }) {
                 className="relative inline-flex items-center rounded-l-md bg-white px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 disabled:opacity-25"
                 onClick={downloadCourse}
                 disabled={downloadState.download}
-
               >
                 <span className="sr-only">Download</span>
                 <svg
@@ -279,27 +260,6 @@ export default function CourseCard({ course }) {
                   />
                 </svg>
               </button>
-              <button
-                type="button"
-                className="relative -ml-px inline-flex items-center rounded-r-md bg-white px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 disabled:opacity-25"
-                onClick={() => setCurrentCID(course.id)}
-              >
-                <span className="sr-only">Resume</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-                  />
-                </svg>
-              </button>
             </span>
           </div>
 
@@ -318,23 +278,9 @@ export default function CourseCard({ course }) {
 
       <div className="flex-1">
         <div className="flex-column gap-x-4">
-          {/* {course.id === currentCID && (
-            <CoureseDetail
-              // title={course.title}
-              // courseData={courseData}
-              speed={speed}
-              // progress={progress}
-            />
-          )} */}
           {lectureStatus &&
             Object.values(lectureStatus).map((lecture, index) => (
-              <CoureseDetail
-                // title={course.title}
-                // courseData={courseData}
-                lecture={lecture}
-                key={index}
-                // progress={progress}
-              />
+              <CoureseDetail lecture={lecture} key={index} />
             ))}
         </div>
       </div>

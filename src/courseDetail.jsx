@@ -1,6 +1,6 @@
 import React, { useContext, useState, useReducer } from "react";
 export default function CoureseDetail({ lecture }) {
-  console.log("l", lecture);
+  // console.log("l", lecture);
   return (
     <>
       <div>{lecture.title}</div>
