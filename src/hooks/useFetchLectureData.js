@@ -18,6 +18,7 @@ export default function useFetchLectureData() {
     );
     const data = await lectureData.json();
     const response = { type };
+    // console.log(data);
 
     switch (type) {
       case assetTypes.VIDEO: {
@@ -36,6 +37,7 @@ export default function useFetchLectureData() {
         return {
           ...response,
           url: data.asset.download_urls[assetTypes.EBOOK],
+          title: data.asset.title,
         };
       case assetTypes.ARTICLE:
         return {
