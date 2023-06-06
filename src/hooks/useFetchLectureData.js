@@ -2,7 +2,10 @@ import { useContext } from "react";
 import { assetTypes } from "../constants/assetTypes";
 import { UdemyContext } from "../../context";
 export default function useFetchLectureData() {
-  const { token } = useContext(UdemyContext);
+  let { token } = useContext(UdemyContext);
+  if (!token) {
+    token = localStorage.getItem("token");
+  }
 
   const fetchLectureData = async (courseId, lectureId, type) => {
     const lectureData = await fetch(

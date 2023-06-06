@@ -54,8 +54,6 @@ export default function CourseCard({ course }) {
       num++;
       const sectionData = courseData[section];
 
-      console.log("sectionData", sectionData);
-
       let sectionPath = join(
         homePath,
         num + "." + sectionData.meta.title.replace(/[/\\?%*:|"<>]/g, "-")

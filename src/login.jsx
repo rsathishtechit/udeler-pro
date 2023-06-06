@@ -10,6 +10,9 @@ export default function Login() {
       "login",
       "https://www.udemy.com/join/login-popup"
     );
+    localStorage.setItem("token", token);
+
+    console.log("token", localStorage.getItem("token"));
     setToken(token);
     navigate("/dashboard");
   };

@@ -19,7 +19,10 @@ function courseReducer(state = initialState, action) {
 }
 const Dashboard = () => {
   const [state, dispatch] = useReducer(courseReducer, initialState);
-  const { token } = useContext(UdemyContext);
+  let { token, setToken } = useContext(UdemyContext);
+  if (!token) {
+    token = localStorage.getItem("token");
+  }
   const loadCourses = async () => {
     await fetch(
       `https://udemy.com/api-2.0/users/me/subscribed-courses?&page=${state.page}&page_size=${state.limit}&ordering=-last_accessed`,
