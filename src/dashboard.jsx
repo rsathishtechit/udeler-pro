@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useReducer, useState } from "react";
-import { UdemyContext } from "../context";
+import { SettingsContext, UdemyContext } from "../context";
 import CourseCard from "./courseCard";
 
 const initialState = {
@@ -20,6 +20,21 @@ function courseReducer(state = initialState, action) {
 const Dashboard = () => {
   const [state, dispatch] = useReducer(courseReducer, initialState);
   let { token, setToken } = useContext(UdemyContext);
+  let { settings } = useContext(SettingsContext);
+
+  async function insert() {
+    const obj = {
+      id: `${Date.now()}`,
+      name: "Ravidan",
+      color: "Rainbow",
+    };
+    console.log("inserting hero:");
+    console.dir(obj);
+    await settings.heroes.insert(obj);
+  }
+
+  console.log("settings", settings);
+
   if (!token) {
     token = localStorage.getItem("token");
   }
@@ -46,6 +61,7 @@ const Dashboard = () => {
   }, []);
   return (
     <div className="mb-4 flex-shrink-0 sm:mb-0 sm:mr-4 overflow-hidden rounded-md bg-white ">
+      <button onClick={() => insert()}> Click</button>
       <ul role="list" className="divide-y divide-gray-200 shadow">
         {state.courses &&
           state.courses.map((course) => (

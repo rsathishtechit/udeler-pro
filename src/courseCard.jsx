@@ -1,6 +1,6 @@
-import React, { useContext, useState, useReducer } from "react";
+import React, { useState, useReducer, useContext, useEffect } from "react";
 
-import { UdemyContext } from "../context";
+import { DbContext, UdemyContext } from "../context";
 
 import Downloader from "mt-files-downloader";
 
@@ -10,6 +10,7 @@ import "react-circular-progressbar/dist/styles.css";
 import { initialState, downloadReducer } from "./store/downloadReducer";
 import useFetchCourseData from "./hooks/useFetchCourseData";
 import useFetchLectureData from "./hooks/useFetchLectureData";
+import { SettingsContext } from "../context";
 
 import { join } from "path";
 const { homedir } = require("os");

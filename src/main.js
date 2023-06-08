@@ -2,12 +2,12 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const cookie = require("cookie");
 
-// const { addRxPlugin } = require("rxdb");
+const { addRxPlugin } = require("rxdb");
 
-// const { getRxStorageMemory } = require("rxdb/plugins/storage-memory");
-// const { exposeIpcMainRxStorage } = require("rxdb/plugins/electron");
+const { getRxStorageMemory } = require("rxdb/plugins/storage-memory");
+const { exposeIpcMainRxStorage } = require("rxdb/plugins/electron");
 
-// const { getDatabase } = require("./shared");
+const { getDatabase } = require("./shared");
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -70,13 +70,13 @@ const createWindow = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async function () {
-  // const storage = getRxStorageMemory();
+  const storage = getRxStorageMemory();
 
-  // exposeIpcMainRxStorage({
-  //   key: "main-storage",
-  //   storage,
-  //   ipcMain: ipcMain,
-  // });
+  exposeIpcMainRxStorage({
+    key: "main-storage",
+    storage,
+    ipcMain: ipcMain,
+  });
 
   // const db = await getDatabase("udeler-dev", storage);
 
