@@ -6,3 +6,8 @@ export const UdemyContext = React.createContext({
   url: "",
   setURL: () => {},
 });
+
+export const SettingsContext = React.createContext({
+  settings: "",
+  setSettings: () => {},
+});

@@ -5,19 +5,26 @@ const { RxDBDevModePlugin } = require("rxdb/plugins/dev-mode");
 addRxPlugin(RxDBQueryBuilderPlugin);
 addRxPlugin(RxDBDevModePlugin);
 
-const authSchema = {
-  title: "token",
-  description: "describes a auth token",
+const heroSchema = {
+  title: "hero schema",
+  description: "describes a simple hero",
   version: 0,
-  primaryKey: "token",
+  primaryKey: "id",
   type: "object",
   properties: {
-    token: {
+    id: {
       type: "string",
       maxLength: 100,
     },
+    name: {
+      type: "string",
+      maxLength: 100,
+    },
+    color: {
+      type: "string",
+    },
   },
-  required: ["token"],
+  required: ["name", "color"],
 };
 
 async function getDatabase(name, storage) {
@@ -27,10 +34,10 @@ async function getDatabase(name, storage) {
     ignoreDuplicate: true,
   });
 
-  console.log("creating auth-collection..");
+  console.log("creating hero-collection..");
   await db.addCollections({
-    auth: {
-      schema: authSchema,
+    heroes: {
+      schema: heroSchema,
     },
   });
 

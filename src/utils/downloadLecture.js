@@ -65,6 +65,13 @@ export default function downloadLecture(
     download.start();
     download.on("error", function (error) {
       if (
+        fs.existsSync(download.filePath + ".mtd") &&
+        !fs.statSync(download.filePath + ".mtd").size
+      ) {
+        fs.unlinkSync(download.filePath + ".mtd");
+      }
+
+      if (
         download.status === -1 &&
         download.stats.total.size == 0 &&
         fs.existsSync(download.filePath)
@@ -72,6 +79,11 @@ export default function downloadLecture(
         download.destroy("end");
         clearInterval(timer);
       }
+
+      if (fs.existsSync(download.filePath)) {
+        download.destroy("end");
+      }
+
       // console.log("EVENT - Download " + error + " error !");
       // console.log(download.error);
     });
