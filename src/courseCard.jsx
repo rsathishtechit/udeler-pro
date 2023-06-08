@@ -53,6 +53,7 @@ export default function CourseCard({ course }) {
     for (const section in courseData) {
       num++;
       const sectionData = courseData[section];
+      // console.log("sectionData", sectionData);
 
       let sectionPath = join(
         homePath,
@@ -62,7 +63,7 @@ export default function CourseCard({ course }) {
       for (const lecture in sectionData.lectures) {
         const lectureData = sectionData.lectures[lecture];
         const type = sectionData.lectures[lecture].asset.asset_type;
-        console.log(type);
+        // console.log(type);
 
         setLectureStatus((prev) => ({
           ...prev,
@@ -70,7 +71,7 @@ export default function CourseCard({ course }) {
         }));
 
         const data = await fetchLectureData(course.id, lectureData.id, type);
-        console.log(data);
+        // console.log(data);
 
         let lecturePath = join(
           sectionPath,
@@ -110,17 +111,19 @@ export default function CourseCard({ course }) {
           var file_name_array = data.title.split(".");
           var file_extension = file_name_array[file_name_array.length - 1];
           lecturePath = lecturePath + "." + file_extension;
-          let dataUrl = data.url[0].file;
+          let dataUrl = data.url;
 
-          downloadLecture(
-            sectionPath,
-            lecturePath,
-            dataUrl,
-            downloader,
-            setLectureStatus,
-            dispatch,
-            lectureData,
-            num
+          dataUrl.forEach((file) =>
+            downloadLecture(
+              sectionPath,
+              lecturePath,
+              file.file,
+              downloader,
+              setLectureStatus,
+              dispatch,
+              lectureData,
+              num
+            )
           );
         }
       }
