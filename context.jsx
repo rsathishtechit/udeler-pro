@@ -7,7 +7,7 @@ export const UdemyContext = React.createContext({
   setURL: () => {},
 });
 
-export const SettingsContext = React.createContext({
-  settings: "",
-  setSettings: () => {},
+export const DbContext = React.createContext({
+  db: "",
+  setdb: () => {},
 });

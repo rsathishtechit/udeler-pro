@@ -1,6 +1,6 @@
-import React, { useState, useReducer, useContext, useEffect } from "react";
+import React, { useState, useReducer, useContext } from "react";
 
-import { DbContext, UdemyContext } from "../context";
+import { UdemyContext, DbContext } from "../context";
 
 import Downloader from "mt-files-downloader";
 
@@ -10,7 +10,6 @@ import "react-circular-progressbar/dist/styles.css";
 import { initialState, downloadReducer } from "./store/downloadReducer";
 import useFetchCourseData from "./hooks/useFetchCourseData";
 import useFetchLectureData from "./hooks/useFetchLectureData";
-import { SettingsContext } from "../context";
 
 import { join } from "path";
 const { homedir } = require("os");
@@ -28,6 +27,7 @@ export default function CourseCard({ course }) {
   const [fetchLectureData] = useFetchLectureData();
 
   let { token, url } = useContext(UdemyContext);
+  let { db } = useContext(DbContext);
 
   const pauseDownload = () => {
     downloader._downloads.forEach((dl) => dl.stop());
@@ -44,7 +44,7 @@ export default function CourseCard({ course }) {
   };
 
   const downloadCourse = async () => {
-    // console.log("courseData", courseData);
+    console.log("courseData", courseData);
     dispatch({ type: "download" });
     dispatch({ type: "total", payload: lectureCount });
 
@@ -54,7 +54,7 @@ export default function CourseCard({ course }) {
     for (const section in courseData) {
       num++;
       const sectionData = courseData[section];
-      // console.log("sectionData", sectionData);
+      console.log("sectionData", sectionData);
 
       let sectionPath = join(
         homePath,
@@ -64,7 +64,7 @@ export default function CourseCard({ course }) {
       for (const lecture in sectionData.lectures) {
         const lectureData = sectionData.lectures[lecture];
         const type = sectionData.lectures[lecture].asset.asset_type;
-        // console.log(type);
+        console.log(type);
 
         setLectureStatus((prev) => ({
           ...prev,
@@ -94,7 +94,8 @@ export default function CourseCard({ course }) {
             setLectureStatus,
             dispatch,
             lectureData,
-            num
+            num,
+            db
           );
         }
 
@@ -123,10 +124,13 @@ export default function CourseCard({ course }) {
               setLectureStatus,
               dispatch,
               lectureData,
-              num
+              num,
+              db
             )
           );
         }
+
+        console.log(db);
       }
     }
   };
