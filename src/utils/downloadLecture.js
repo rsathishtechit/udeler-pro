@@ -11,10 +11,20 @@ export default function downloadLecture(
   setLectureStatus,
   dispatch,
   lectureData,
-  num
+  num,
+  db
 ) {
-  mkdirp(sectionPath).then(() => {
+  mkdirp(sectionPath).then(async () => {
     const download = downloader.download(data, lecturePath);
+
+    const obj = {
+      id: `${lectureData.id}`,
+      courseName: "720",
+      lectureId: "English",
+      status: "Pending",
+    };
+
+    await db.courses.insert(obj);
 
     download.setRetryOptions({
       maxRetries: 3, // Default: 5

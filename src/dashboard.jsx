@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useReducer, useState } from "react";
-import { SettingsContext, UdemyContext } from "../context";
+import { DbContext, UdemyContext } from "../context";
 import CourseCard from "./courseCard";
 
 const initialState = {
@@ -7,6 +7,7 @@ const initialState = {
   limit: 10,
   courses: [],
 };
+
 function courseReducer(state = initialState, action) {
   switch (action.type) {
     case "load_courses":
@@ -17,23 +18,35 @@ function courseReducer(state = initialState, action) {
       };
   }
 }
+
 const Dashboard = () => {
   const [state, dispatch] = useReducer(courseReducer, initialState);
-  let { token, setToken } = useContext(UdemyContext);
-  let { settings } = useContext(SettingsContext);
+  let { token } = useContext(UdemyContext);
+  let { db } = useContext(DbContext);
 
-  async function insert() {
-    const obj = {
-      id: `${Date.now()}`,
-      name: "Ravidan",
-      color: "Rainbow",
-    };
-    console.log("inserting hero:");
-    console.dir(obj);
-    await settings.heroes.insert(obj);
+  const [loading, setLoading] = useState(true);
+
+  async function get() {
+    db.settings
+      .find()
+      .sort({
+        videoQuality: "asc",
+      })
+      .$.subscribe(function (settings) {
+        if (!settings) {
+          heroesList.innerHTML = "Loading..";
+          return;
+        }
+        console.log("observable fired");
+        console.dir(settings);
+      });
+
+    const course = db.courses
+      .find()
+      .exec()
+      .then((documents) => console.dir(documents));
+    console.log("course", course);
   }
-
-  console.log("settings", settings);
 
   if (!token) {
     token = localStorage.getItem("token");
@@ -58,30 +71,40 @@ const Dashboard = () => {
   };
   useEffect(() => {
     loadCourses();
+    if (state.courses) {
+      setLoading(false);
+    }
   }, []);
+
   return (
-    <div className="mb-4 flex-shrink-0 sm:mb-0 sm:mr-4 overflow-hidden rounded-md bg-white ">
-      <button onClick={() => insert()}> Click</button>
-      <ul role="list" className="divide-y divide-gray-200 shadow">
-        {state.courses &&
-          state.courses.map((course) => (
-            <li key={course.id} className="shadow mt-2 ml-2 mr-2">
-              <CourseCard course={course} />
-            </li>
-          ))}
-      </ul>
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <div>
-          <button
-            onClick={loadCourses}
-            type="submit"
-            className="flex w-full mb-5 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            Load more courses
-          </button>
+    <>
+      {loading ? (
+        <>Loading</>
+      ) : (
+        <div className="mb-4 flex-shrink-0 sm:mb-0 sm:mr-4 overflow-hidden rounded-md bg-white ">
+          <button onClick={() => get()}> Click</button>
+          <ul role="list" className="divide-y divide-gray-200 shadow">
+            {state.courses &&
+              state.courses.map((course) => (
+                <li key={course.id} className="shadow mt-2 ml-2 mr-2">
+                  <CourseCard course={course} />
+                </li>
+              ))}
+          </ul>
+          <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+            <div>
+              <button
+                onClick={loadCourses}
+                type="submit"
+                className="flex w-full mb-5 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                Load more courses
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

@@ -18,7 +18,7 @@ export default function useFetchLectureData() {
     );
     const data = await lectureData.json();
     const response = { type };
-    // console.log("lectureData", data);
+    console.log("lectureData", data);
 
     switch (type) {
       case assetTypes.VIDEO: {
