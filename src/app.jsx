@@ -15,7 +15,7 @@ const { ipcRenderer } = require("electron");
 const App = () => {
   const [token, setToken] = React.useState("");
   const [url, setURL] = React.useState("");
-  const [db, setDb] = React.useState({});
+  const [db, setDb] = React.useState(null);
 
   React.useEffect(() => {
     (async () => {
@@ -25,24 +25,28 @@ const App = () => {
         ipcRenderer: ipcRenderer,
       });
       const DB = await getDatabase(
-        "settingsdb", // we add a random timestamp in dev-mode to reset the database on each start
+        "udelerpro", // we add a random timestamp in dev-mode to reset the database on each start
         storage
       );
-      setDb(DB);
+      await setDb(DB);
     })();
   }, []);
 
   return (
-    <UdemyContext.Provider value={{ token, setToken, url, setURL }}>
-      <DbContext.Provider value={{ db, setDb }}>
-        <HashRouter>
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-          </Routes>
-        </HashRouter>
-      </DbContext.Provider>
-    </UdemyContext.Provider>
+    <>
+      {db && (
+        <UdemyContext.Provider value={{ token, setToken, url, setURL }}>
+          <DbContext.Provider value={{ db, setDb }}>
+            <HashRouter>
+              <Routes>
+                <Route path="/" element={<Login />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+              </Routes>
+            </HashRouter>
+          </DbContext.Provider>
+        </UdemyContext.Provider>
+      )}
+    </>
   );
 };
 

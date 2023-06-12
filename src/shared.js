@@ -55,9 +55,10 @@ async function getDatabase(name, storage) {
     name,
     storage,
     ignoreDuplicate: true,
+    multiInstance: false,
+    eventReduce: true,
   });
 
-  console.log("creating hero-collection..");
   await db.addCollections({
     settings: {
       schema: settingsSchema,
@@ -70,6 +71,7 @@ async function getDatabase(name, storage) {
   // db.settings.remove();
   // db.settings.destroy();
 
+  // Checking for the existing records
   const id = await db.settings
     .findOne({
       selector: {
@@ -80,10 +82,11 @@ async function getDatabase(name, storage) {
     })
     .exec();
 
+  // Inserting default settings if  settings not exist already
   if (id === null && id?._data.id !== "1") {
     const obj = {
       id: "1",
-      videoQuality: "720",
+      videoQuality: "360",
       language: "English",
     };
     await db.settings.insert(obj);
