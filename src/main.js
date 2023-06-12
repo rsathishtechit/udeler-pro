@@ -2,12 +2,8 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const cookie = require("cookie");
 
-const { addRxPlugin } = require("rxdb");
-
 const { getRxStorageMemory } = require("rxdb/plugins/storage-memory");
 const { exposeIpcMainRxStorage } = require("rxdb/plugins/electron");
-
-const { getDatabase } = require("./shared");
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
