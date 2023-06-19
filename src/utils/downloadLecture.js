@@ -11,8 +11,7 @@ export default function downloadLecture(
   setLectureStatus,
   dispatch,
   lectureData,
-  num,
-  db
+  num
 ) {
   mkdirp(sectionPath).then(async () => {
     const download = downloader.download(data, lecturePath);
@@ -63,7 +62,7 @@ export default function downloadLecture(
         }));
       }
     }, 1000);
-    download.start();
+    // download.start();
     download.on("error", function (error) {
       if (
         fs.existsSync(download.filePath + ".mtd") &&

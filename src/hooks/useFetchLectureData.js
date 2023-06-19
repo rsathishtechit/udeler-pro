@@ -1,18 +1,17 @@
 import { useContext } from "react";
 import { assetTypes } from "../constants/assetTypes";
-import { UdemyContext } from "../../context";
+import { DefaultSettingsContext, UdemyContext } from "../context/context";
+
 export default function useFetchLectureData() {
   let { token } = useContext(UdemyContext);
   if (!token) {
     token = localStorage.getItem("token");
   }
+  let { defaultSettings } = useContext(DefaultSettingsContext);
 
-  const fetchLectureData = async (
-    courseId,
-    lectureId,
-    type,
-    defaultSettings
-  ) => {
+  console.log("defaultSettings", defaultSettings);
+
+  const fetchLectureData = async (courseId, lectureId, type) => {
     const lectureData = await fetch(
       `https://udemy.com/api-2.0/users/me/subscribed-courses/${courseId}/lectures/${lectureId}?fields[lecture]=asset,supplementary_assets&fields[asset]=stream_urls,download_urls,captions,title,filename,data,body,media_sources,media_license_token&q=${Date.now()}`,
       {
@@ -39,8 +38,8 @@ export default function useFetchLectureData() {
         return {
           encrypted: false,
           url: videos.filter(
-            (video) => video.label === defaultSettings.videoQuality
-          ),
+            (video) => video.label === defaultSettings.videoQuality.name
+          )[0],
           ...response,
         };
       }

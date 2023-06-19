@@ -74,16 +74,6 @@ app.on("ready", async function () {
     ipcMain: ipcMain,
   });
 
-  // const db = await getDatabase("udeler-dev", storage);
-
-  // show heroes table in console
-  // db.auth
-  //   .find()
-  //   .sort("token")
-  //   .$.subscribe((authDocs) => {
-  //     console.log("### got heroes(" + authDocs.length + "):");
-  //     authDocs.forEach((doc) => console.log(doc.token));
-  //   });
   createWindow();
 });
 

@@ -1,9 +1,28 @@
 const { createRxDatabase, addRxPlugin, isRxCollection } = require("rxdb");
 const { RxDBQueryBuilderPlugin } = require("rxdb/plugins/query-builder");
 const { RxDBDevModePlugin } = require("rxdb/plugins/dev-mode");
+const { VIDEO_QUALITY, LANGUAGES } = require("./constants/settings");
 
 addRxPlugin(RxDBQueryBuilderPlugin);
 addRxPlugin(RxDBDevModePlugin);
+
+const authSchema = {
+  title: "Auth Schema",
+  description: "Store Token",
+  version: 0,
+  primaryKey: "id",
+  type: "object",
+  properties: {
+    id: {
+      type: "string",
+      maxLength: 100,
+    },
+    token: {
+      type: "string",
+    },
+  },
+  required: ["id", "token"],
+};
 
 const settingsSchema = {
   title: "Settings Schema",
@@ -66,6 +85,9 @@ async function getDatabase(name, storage) {
     courses: {
       schema: courseSchema,
     },
+    auth: {
+      schema: authSchema,
+    },
   });
 
   // db.settings.remove();
@@ -86,8 +108,8 @@ async function getDatabase(name, storage) {
   if (id === null && id?._data.id !== "1") {
     const obj = {
       id: "1",
-      videoQuality: "360",
-      language: "English",
+      videoQuality: VIDEO_QUALITY[2],
+      language: LANGUAGES[0],
     };
     await db.settings.insert(obj);
   }
