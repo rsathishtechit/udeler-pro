@@ -19,6 +19,7 @@ import useFetchLectureData from "./hooks/useFetchLectureData";
 import { join } from "path";
 const { homedir } = require("os");
 import fs, { mkdirp } from "fs-extra";
+const https = require("https");
 
 import CoureseDetail from "./courseDetail";
 import downloadLecture from "./utils/downloadLecture";
@@ -54,8 +55,8 @@ export default function CourseCard({ course }) {
   };
 
   const downloadCourse = async () => {
-    // console.log("courseData", courseData);
     dispatch({ type: "download" });
+    dispatch({ type: "status" });
     dispatch({ type: "total", payload: lectureCount });
 
     let homePath = join(homedir(), `Downloads/udeler/${course.title}`);
@@ -93,8 +94,10 @@ export default function CourseCard({ course }) {
         );
 
         if (data.type === "Video" && !data.encrypted) {
+          let caption_path = lecturePath;
           lecturePath = lecturePath + ".mp4";
           let dataUrl = data.url;
+          let captionUrl = data.caption_url;
 
           downloadLecture(
             sectionPath,
@@ -106,6 +109,18 @@ export default function CourseCard({ course }) {
             lectureData,
             num
           );
+
+          https.get(captionUrl, (res) => {
+            const path = `${caption_path + ".vtt"}`;
+            const writeStream = fs.createWriteStream(path);
+
+            res.pipe(writeStream);
+
+            writeStream.on("finish", () => {
+              writeStream.close();
+              console.log("Subtitle Download Completed!");
+            });
+          });
         }
 
         if (data.type === "Article" && !data.encrypted) {
@@ -229,6 +244,7 @@ export default function CourseCard({ course }) {
                   showDownloadDetail(course.id);
                   setOpen(true);
                 }}
+                disabled={downloadState.status}
               >
                 <span className="sr-only">Detail</span>
                 <svg

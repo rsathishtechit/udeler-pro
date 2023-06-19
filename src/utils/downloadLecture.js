@@ -62,7 +62,7 @@ export default function downloadLecture(
         }));
       }
     }, 1000);
-    // download.start();
+    download.start();
     download.on("error", function (error) {
       if (
         fs.existsSync(download.filePath + ".mtd") &&
