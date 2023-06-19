@@ -1,6 +1,10 @@
-import React, { useState, useReducer, useContext, useEffect } from "react";
+import React, { useState, useReducer, useContext } from "react";
 
-import { UdemyContext, DbContext } from "../context";
+import {
+  UdemyContext,
+  DbContext,
+  DefaultSettingsContext,
+} from "./context/context";
 import { createPortal } from "react-dom";
 
 import Downloader from "mt-files-downloader";
@@ -19,20 +23,17 @@ import fs, { mkdirp } from "fs-extra";
 import CoureseDetail from "./courseDetail";
 import downloadLecture from "./utils/downloadLecture";
 
-export default function CourseCard({
-  course,
-  defaultSettings,
-  courseDetailRef,
-}) {
-  const [downloadState, dispatch] = useReducer(downloadReducer, initialState);
+export default function CourseCard({ course }) {
   const [downloader] = useState(() => new Downloader());
-
+  const [downloadState, dispatch] = useReducer(downloadReducer, initialState);
   const [courseData, lectureCount] = useFetchCourseData(course.id);
-  const [lectureStatus, setLectureStatus] = useState({});
   const [fetchLectureData] = useFetchLectureData();
+  const [open, setOpen] = useState(false);
+
+  const [, setCurrentDetail] = useState();
+  const [lectureStatus, setLectureStatus] = useState({});
 
   let { token, url } = useContext(UdemyContext);
-  let { db } = useContext(DbContext);
 
   const pauseDownload = () => {
     downloader._downloads.forEach((dl) => dl.stop());
@@ -46,6 +47,10 @@ export default function CourseCard({
     dispatch({
       type: "resume",
     });
+  };
+
+  const showDownloadDetail = (courseId) => {
+    setCurrentDetail(courseId);
   };
 
   const downloadCourse = async () => {
@@ -69,19 +74,14 @@ export default function CourseCard({
       for (const lecture in sectionData.lectures) {
         const lectureData = sectionData.lectures[lecture];
         const type = sectionData.lectures[lecture].asset.asset_type;
-        console.log(type);
+        // console.log(type);
 
         setLectureStatus((prev) => ({
           ...prev,
           [lectureData.id]: { title: lectureData.title },
         }));
 
-        const data = await fetchLectureData(
-          course.id,
-          lectureData.id,
-          type,
-          defaultSettings
-        );
+        const data = await fetchLectureData(course.id, lectureData.id, type);
         console.log(data);
 
         let lecturePath = join(
@@ -104,8 +104,7 @@ export default function CourseCard({
             setLectureStatus,
             dispatch,
             lectureData,
-            num,
-            db
+            num
           );
         }
 
@@ -134,8 +133,7 @@ export default function CourseCard({
               setLectureStatus,
               dispatch,
               lectureData,
-              num,
-              db
+              num
             )
           );
         }
@@ -224,6 +222,26 @@ export default function CourseCard({
                   />
                 </svg>
               </button>
+              <button
+                type="button"
+                className="relative -ml-px inline-flex items-center rounded-r-md bg-white px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 disabled:opacity-25"
+                onClick={() => {
+                  showDownloadDetail(course.id);
+                  setOpen(true);
+                }}
+              >
+                <span className="sr-only">Detail</span>
+                <svg
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z"></path>
+                </svg>
+              </button>
             </span>
           </div>
 
@@ -239,20 +257,14 @@ export default function CourseCard({
           </div>
         </div>
       </div>
-
-      {/* <div className="flex-1">
-        <div className="flex-column gap-x-4">
-          {lectureStatus &&
-            Object.values(lectureStatus).map((lecture, index) => (
-              <CoureseDetail lecture={lecture} key={index} />
-            ))}
-        </div>
-      </div> */}
-      {lectureStatus &&
-        createPortal(
-          <CoureseDetail lecture={lectureStatus} />,
-          document.getElementById("status")
-        )}
+      {lectureStatus && (
+        <CoureseDetail
+          open={open}
+          setOpen={setOpen}
+          lecture={lectureStatus}
+          courseId={course.id}
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { UdemyContext } from "../../context";
+import { UdemyContext } from "../context/context";
 
 export default function useFetchCourseData(courseId) {
   const [courseData, setCourseData] = useState([]);

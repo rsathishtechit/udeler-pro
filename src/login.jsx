@@ -1,19 +1,19 @@
 import React, { useContext } from "react";
-import { UdemyContext } from "../context";
+import { UdemyContext } from "./context/context";
 import { useNavigate } from "react-router-dom";
 import { ipcRenderer } from "electron";
+import useAuth from "./hooks/useAuth";
+
 export default function Login() {
-  const { token, setToken } = useContext(UdemyContext);
+  const { setToken } = useContext(UdemyContext);
   const navigate = useNavigate();
-  const onLogin = () => {
+  const [addToken] = useAuth();
+  const onLogin = async () => {
     const token = ipcRenderer.sendSync(
       "login",
       "https://www.udemy.com/join/login-popup"
     );
-    localStorage.setItem("token", token);
-
-    console.log("token", localStorage.getItem("token"));
-    setToken(token);
+    addToken(token);
     navigate("/dashboard");
   };
   return (

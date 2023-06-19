@@ -1,7 +1,7 @@
 import React from "react";
 
 export const UdemyContext = React.createContext({
-  token: "0",
+  token: "",
   setToken: () => {},
   url: "",
   setURL: () => {},
@@ -10,4 +10,9 @@ export const UdemyContext = React.createContext({
 export const DbContext = React.createContext({
   db: "",
   setdb: () => {},
+});
+
+export const DefaultSettingsContext = React.createContext({
+  defaultSettings: {},
+  setDefaultSettings: () => {},
 });
