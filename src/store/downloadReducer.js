@@ -2,6 +2,7 @@ export const initialState = {
   download: false,
   pause: true,
   resume: true,
+  status: true,
   totalLectures: 0,
   completedLectures: 0,
   completedPercentage: 0,
@@ -26,6 +27,11 @@ export function downloadReducer(state = initialState, action) {
         ...state,
         resume: !state.resume,
         pause: !state.pause,
+      };
+    case "status":
+      return {
+        ...state,
+        status: !state.status,
       };
     case "total":
       return {
