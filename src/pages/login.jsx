@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
-import { UdemyContext } from "./context/context";
+import { UdemyContext } from "../context/context";
 import { useNavigate } from "react-router-dom";
 import { ipcRenderer } from "electron";
-import useAuth from "./hooks/useAuth";
+import useAuth from "../hooks/useAuth";
 
 export default function Login() {
   const { setToken } = useContext(UdemyContext);

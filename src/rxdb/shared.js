@@ -1,7 +1,8 @@
-const { createRxDatabase, addRxPlugin, isRxCollection } = require("rxdb");
-const { RxDBQueryBuilderPlugin } = require("rxdb/plugins/query-builder");
-const { RxDBDevModePlugin } = require("rxdb/plugins/dev-mode");
-const { VIDEO_QUALITY, LANGUAGES } = require("./constants/settings");
+import { createRxDatabase, addRxPlugin, isRxCollection } from "rxdb";
+import { RxDBQueryBuilderPlugin } from "rxdb/plugins/query-builder";
+import { RxDBDevModePlugin } from "rxdb/plugins/dev-mode";
+
+import { VIDEO_QUALITY, LANGUAGES } from "../constants/settings";
 
 addRxPlugin(RxDBQueryBuilderPlugin);
 addRxPlugin(RxDBDevModePlugin);
@@ -39,6 +40,9 @@ const settingsSchema = {
       type: "string",
     },
     language: {
+      type: "string",
+    },
+    downloadPath: {
       type: "string",
     },
   },
@@ -110,6 +114,7 @@ async function getDatabase(name, storage) {
       id: "1",
       videoQuality: VIDEO_QUALITY[2],
       language: LANGUAGES[0],
+      downloadPath: "",
     };
     await db.settings.insert(obj);
   }
@@ -117,6 +122,4 @@ async function getDatabase(name, storage) {
   return db;
 }
 
-module.exports = {
-  getDatabase,
-};
+export { getDatabase };

@@ -1,20 +1,15 @@
 import React, { useState, useReducer, useContext } from "react";
 
-import {
-  UdemyContext,
-  DbContext,
-  DefaultSettingsContext,
-} from "./context/context";
-import { createPortal } from "react-dom";
+import { DefaultSettingsContext, UdemyContext } from "../context/context";
 
 import Downloader from "mt-files-downloader";
 
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
-import { initialState, downloadReducer } from "./store/downloadReducer";
-import useFetchCourseData from "./hooks/useFetchCourseData";
-import useFetchLectureData from "./hooks/useFetchLectureData";
+import { initialState, downloadReducer } from "../store/downloadReducer";
+import useFetchCourseData from "../hooks/useFetchCourseData";
+import useFetchLectureData from "../hooks/useFetchLectureData";
 
 import { join } from "path";
 const { homedir } = require("os");
@@ -22,7 +17,7 @@ import fs, { mkdirp } from "fs-extra";
 const https = require("https");
 
 import CoureseDetail from "./courseDetail";
-import downloadLecture from "./utils/downloadLecture";
+import downloadLecture from "../utils/downloadLecture";
 
 export default function CourseCard({ course }) {
   const [downloader] = useState(() => new Downloader());
@@ -31,10 +26,10 @@ export default function CourseCard({ course }) {
   const [fetchLectureData] = useFetchLectureData();
   const [open, setOpen] = useState(false);
 
-  const [, setCurrentDetail] = useState();
   const [lectureStatus, setLectureStatus] = useState({});
 
   let { token, url } = useContext(UdemyContext);
+  let { defaultSettings } = useContext(DefaultSettingsContext);
 
   const pauseDownload = () => {
     downloader._downloads.forEach((dl) => dl.stop());
@@ -50,16 +45,14 @@ export default function CourseCard({ course }) {
     });
   };
 
-  const showDownloadDetail = (courseId) => {
-    setCurrentDetail(courseId);
-  };
-
   const downloadCourse = async () => {
     dispatch({ type: "download" });
     dispatch({ type: "status" });
     dispatch({ type: "total", payload: lectureCount });
 
-    let homePath = join(homedir(), `Downloads/udeler/${course.title}`);
+    let homePath = defaultSettings.downloadPath
+      ? `${defaultSettings.downloadPath}/${course.title}`
+      : join(homedir(), `Downloads/udeler/${course.title}`);
     let num = 0;
 
     for (const section in courseData) {
@@ -241,7 +234,6 @@ export default function CourseCard({ course }) {
                 type="button"
                 className="relative -ml-px inline-flex items-center rounded-r-md bg-white px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 disabled:opacity-25"
                 onClick={() => {
-                  showDownloadDetail(course.id);
                   setOpen(true);
                 }}
                 disabled={downloadState.status}

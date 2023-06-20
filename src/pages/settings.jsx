@@ -1,9 +1,11 @@
 import React, { Fragment, useContext, useEffect, useState } from "react";
-import { DbContext, DefaultSettingsContext } from "./context/context";
+import { DbContext, DefaultSettingsContext } from "../context/context";
 
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import { LANGUAGES, VIDEO_QUALITY } from "./constants/settings";
+import { LANGUAGES, VIDEO_QUALITY } from "../constants/settings";
+import { ipcRenderer } from "electron";
+import { BarsArrowUpIcon, UsersIcon } from "@heroicons/react/20/solid";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -16,10 +18,17 @@ const Settings = () => {
   const [settings, setSettings] = useState({});
 
   const setData = async (dbObject) => {
-    const { videoQuality, language } = await dbObject._data;
-    setSettings({ videoQuality, language });
-    setDefaultSettings({ videoQuality, language });
+    const { videoQuality, language, downloadPath } = await dbObject._data;
+    setSettings({ videoQuality, language, downloadPath });
+    setDefaultSettings({ videoQuality, language, downloadPath });
   };
+
+  async function selectDownloadPath() {
+    const newPath = ipcRenderer.sendSync("show");
+    if (!newPath.canceled) {
+      changeSetting("downloadPath", `${newPath.filePaths}`);
+    }
+  }
 
   const changeSetting = async (key, value) => {
     const data = await db.settings
@@ -49,7 +58,7 @@ const Settings = () => {
         },
       })
       .exec();
-    console.log(await response._data);
+    console.log(response._data);
     setData(response);
   };
 
@@ -228,6 +237,40 @@ const Settings = () => {
           </Listbox>
         </>
       )}
+      <hr className="my-3" />
+
+      <div className="mt-2 flex rounded-md shadow-sm">
+        <div className="relative flex flex-grow items-stretch focus-within:z-10">
+          <input
+            type="email"
+            name="email"
+            id="email"
+            className="block w-full rounded-none rounded-l-md border-0 py-1.5  text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            placeholder="Select the download file path"
+            value={settings.downloadPath}
+          />
+        </div>
+        <button
+          type="button"
+          className="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          onClick={selectDownloadPath}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"
+            />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 };
