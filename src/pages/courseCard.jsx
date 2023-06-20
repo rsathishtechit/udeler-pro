@@ -13,6 +13,7 @@ import useFetchLectureData from "../hooks/useFetchLectureData";
 
 import { join } from "path";
 const { homedir } = require("os");
+
 import fs, { mkdirp } from "fs-extra";
 const https = require("https");
 
@@ -52,7 +53,8 @@ export default function CourseCard({ course }) {
 
     let homePath = defaultSettings.downloadPath
       ? `${defaultSettings.downloadPath}/${course.title}`
-      : join(homedir(), `Downloads/udeler/${course.title}`);
+      : join(homedir(), `Downloads/${course.title}`);
+
     let num = 0;
 
     for (const section in courseData) {
