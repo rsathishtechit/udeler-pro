@@ -28,7 +28,6 @@ export default function useFetchLectureData() {
           (asset) => asset.type === "video/mp4"
         );
 
-        console.log(defaultSettings);
         let caption_url;
 
         let captions = data.asset.captions.filter(

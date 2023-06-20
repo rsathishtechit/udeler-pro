@@ -2,15 +2,15 @@ import * as React from "react";
 
 import * as ReactDOM from "react-dom/client";
 import { HashRouter, Route, Routes } from "react-router-dom";
-import Login from "./login";
+import Login from "./pages/login";
 import {
   UdemyContext,
   DbContext,
   DefaultSettingsContext,
 } from "./context/context";
-import Dashboard from "./dashboard";
+import Dashboard from "./pages/dashboard";
 
-const { getDatabase } = require("./shared");
+const { getDatabase } = require("./rxdb/shared");
 const { getRxStorageMemory } = require("rxdb/plugins/storage-memory");
 const { getRxStorageIpcRenderer } = require("rxdb/plugins/electron");
 

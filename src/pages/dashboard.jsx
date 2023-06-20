@@ -5,14 +5,14 @@ import React, {
   useState,
   useRef,
 } from "react";
-import { DbContext, UdemyContext } from "./context/context";
+import { DbContext, UdemyContext } from "../context/context";
 import CourseCard from "./courseCard";
 
 const { addRxPlugin } = require("rxdb");
 
 import { RxDBUpdatePlugin } from "rxdb/plugins/update";
 import Settings from "./settings";
-import useAuth from "./hooks/useAuth";
+import useAuth from "../hooks/useAuth";
 
 addRxPlugin(RxDBUpdatePlugin);
 

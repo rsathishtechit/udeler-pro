@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import ReactPortal from "./portal/reactportal";
+import ReactPortal from "../portal/reactportal";
 import { Dialog, Transition } from "@headlessui/react";
 import {
   ExclamationTriangleIcon,

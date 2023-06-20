@@ -5,6 +5,11 @@ const cookie = require("cookie");
 const { getRxStorageMemory } = require("rxdb/plugins/storage-memory");
 const { exposeIpcMainRxStorage } = require("rxdb/plugins/electron");
 
+const { dialog } = require("electron");
+
+import { join } from "path";
+const { homedir } = require("os");
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
   app.quit();
@@ -75,6 +80,15 @@ app.on("ready", async function () {
   });
 
   createWindow();
+
+  ipcMain.on("show", async (event) => {
+    const path = await dialog.showOpenDialog({
+      properties: ["openDirectory", "createDirectory"],
+      defaultPath: join(homedir(), "Downloads/udeler"),
+    });
+    console.log(path);
+    event.returnValue = path;
+  });
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
