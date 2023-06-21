@@ -1,8 +1,5 @@
 name: Release
-on:
-  release:
-    types:
-      - created
+on: [push, pull_request]
 
 jobs:
   publish_on_linux:
