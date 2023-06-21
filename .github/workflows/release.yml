@@ -1,5 +1,8 @@
 name: Release
-on: create
+on:
+  push:
+    tags:
+      - "*"
 
 jobs:
   publish_on_linux:
