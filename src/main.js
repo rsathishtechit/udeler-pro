@@ -10,6 +10,12 @@ const { dialog } = require("electron");
 import { join } from "path";
 const { homedir } = require("os");
 
+import * as Sentry from "@sentry/electron";
+
+Sentry.init({
+  dsn: "https://6665e2d7b9174976b95b33e4ab69c2a2@o4505397808660480.ingest.sentry.io/4505397811740672",
+});
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
   app.quit();

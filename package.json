@@ -1,7 +1,7 @@
 {
   "name": "udeler-pro",
   "productName": "udeler-pro",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "description": "Udemy desktop client to download courses",
   "main": ".webpack/main",
   "scripts": {
@@ -50,6 +50,8 @@
     "@electron/asar": "^3.2.4",
     "@headlessui/react": "^1.7.14",
     "@heroicons/react": "^2.0.17",
+    "@sentry/electron": "^4.6.0",
+    "@sentry/react": "^7.56.0",
     "electron-squirrel-startup": "^1.0.0",
     "mkdirp": "^3.0.1",
     "mt-files-downloader": "github:FaisalUmair/mt-files-downloader-wrapper",
