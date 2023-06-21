@@ -86,7 +86,6 @@ app.on("ready", async function () {
       properties: ["openDirectory", "createDirectory"],
       defaultPath: join(homedir(), "Downloads/udeler"),
     });
-    console.log(path);
     event.returnValue = path;
   });
 });
