@@ -5,9 +5,6 @@ import { LANGUAGES, VIDEO_QUALITY } from "../constants/settings";
 
 export default function useFetchLectureData() {
   let { token } = useContext(UdemyContext);
-  if (!token) {
-    token = localStorage.getItem("token");
-  }
   let { defaultSettings } = useContext(DefaultSettingsContext);
   const fetchLectureData = async (courseId, lectureId, type) => {
     const lectureData = await fetch(
@@ -20,7 +17,7 @@ export default function useFetchLectureData() {
     );
     const data = await lectureData.json();
     const response = { type };
-    console.log("lectureData", data);
+    // console.log("lectureData", data);
 
     switch (type) {
       case assetTypes.VIDEO: {

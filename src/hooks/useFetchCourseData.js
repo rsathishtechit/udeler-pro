@@ -5,9 +5,6 @@ export default function useFetchCourseData(courseId) {
   const [courseData, setCourseData] = useState([]);
   const [lectureCount, setLectureCount] = useState([]);
   let { token } = useContext(UdemyContext);
-  if (!token) {
-    token = localStorage.getItem("token");
-  }
 
   const fetchCourseData = async () => {
     await fetch(

@@ -1,11 +1,5 @@
-import React, {
-  useContext,
-  useEffect,
-  useReducer,
-  useState,
-  useRef,
-} from "react";
-import { DbContext, UdemyContext } from "../context/context";
+import React, { useContext, useEffect, useReducer, useState } from "react";
+import { UdemyContext } from "../context/context";
 import CourseCard from "./courseCard";
 
 const { addRxPlugin } = require("rxdb");
@@ -36,15 +30,9 @@ function courseReducer(state = initialState, action) {
 const Dashboard = () => {
   const [state, dispatch] = useReducer(courseReducer, initialState);
   let { token, setToken } = useContext(UdemyContext);
-  let { db } = useContext(DbContext);
-
   const [_, fetchToken] = useAuth();
 
   const [loading, setLoading] = useState(true);
-
-  // if (!token) {
-  //   token = localStorage.getItem("token");
-  // }
 
   const loadCourses = async () => {
     await fetch(

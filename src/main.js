@@ -50,14 +50,13 @@ const createWindow = () => {
         if (token) {
           event.returnValue = token;
           udemyLoginWindow.destroy();
-          // request.webContents.session.clearStorageData();
+          request.webContents.session.clearStorageData();
           request.webContents.session.webRequest.onBeforeSendHeaders(
             { urls: ["*://*.udemy.com/*"] },
             function (request, callback) {
               callback({ requestHeaders: request.requestHeaders });
             }
           );
-          // checkLogin();
         }
         callback({ requestHeaders: request.requestHeaders });
       }
