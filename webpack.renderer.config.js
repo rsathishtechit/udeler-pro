@@ -18,4 +18,7 @@ module.exports = {
     extensions: [".js", ".jsx"],
   },
   target: "electron-renderer",
+  externals: {
+    electron: "commonjs electron",
+  },
 };

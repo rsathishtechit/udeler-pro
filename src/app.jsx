@@ -16,6 +16,12 @@ const { getRxStorageIpcRenderer } = require("rxdb/plugins/electron");
 
 const { ipcRenderer } = require("electron");
 
+import * as Sentry from "@sentry/react";
+
+function FallbackComponent() {
+  return <div>An error has ocurred :</div>;
+}
+
 const App = () => {
   const [token, setToken] = React.useState("");
   const [url, setURL] = React.useState("");
@@ -39,22 +45,24 @@ const App = () => {
 
   return (
     <>
-      {db && (
-        <UdemyContext.Provider value={{ token, setToken, url, setURL }}>
-          <DbContext.Provider value={{ db, setDb }}>
-            <DefaultSettingsContext.Provider
-              value={{ defaultSettings, setDefaultSettings }}
-            >
-              <HashRouter>
-                <Routes>
-                  <Route path="/" element={<Login />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                </Routes>
-              </HashRouter>
-            </DefaultSettingsContext.Provider>
-          </DbContext.Provider>
-        </UdemyContext.Provider>
-      )}
+      <Sentry.ErrorBoundary fallback={FallbackComponent} showDialog>
+        {db && (
+          <UdemyContext.Provider value={{ token, setToken, url, setURL }}>
+            <DbContext.Provider value={{ db, setDb }}>
+              <DefaultSettingsContext.Provider
+                value={{ defaultSettings, setDefaultSettings }}
+              >
+                <HashRouter>
+                  <Routes>
+                    <Route path="/" element={<Login />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                  </Routes>
+                </HashRouter>
+              </DefaultSettingsContext.Provider>
+            </DbContext.Provider>
+          </UdemyContext.Provider>
+        )}
+      </Sentry.ErrorBoundary>
     </>
   );
 };
