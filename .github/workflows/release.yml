@@ -6,6 +6,7 @@ on:
 
 jobs:
   publish_on_linux:
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -20,6 +21,7 @@ jobs:
         run: npm run publish
 
   publish_on_mac:
+    permissions: write-all
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
@@ -34,6 +36,7 @@ jobs:
         run: npm run publish
 
   publish_on_win:
+    permissions: write-all
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
