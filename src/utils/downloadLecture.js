@@ -13,6 +13,7 @@ export default function downloadLecture(
   lectureData,
   num
 ) {
+  console.log("downloadLecture");
   mkdirp(sectionPath).then(async () => {
     const download = downloader.download(data, lecturePath);
 
