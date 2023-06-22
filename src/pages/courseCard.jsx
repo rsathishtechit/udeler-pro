@@ -51,9 +51,7 @@ export default function CourseCard({ course }) {
     dispatch({ type: "status" });
     dispatch({ type: "total", payload: lectureCount });
 
-    let homePath = defaultSettings.downloadPath
-      ? `${defaultSettings.downloadPath}/${course.title}`
-      : join(homedir(), `Downloads/${course.title}`);
+    let homePath = join(homedir(), `Downloads/${course.title}`);
 
     let num = 0;
 
