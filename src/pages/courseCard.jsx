@@ -51,9 +51,12 @@ export default function CourseCard({ course }) {
     dispatch({ type: "status" });
     dispatch({ type: "total", payload: lectureCount });
 
-    let homePath = join(homedir(), `Downloads/${course.title}`);
+    let homePath = defaultSettings.downloadPath
+      ? `${defaultSettings.downloadPath}/${course.title}`
+      : join(homedir(), `Downloads/${course.title}`);
 
     let num = 0;
+    debugger;
 
     for (const section in courseData) {
       num++;
