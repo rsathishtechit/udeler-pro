@@ -60,8 +60,6 @@ const App = () => {
     })();
   }, []);
 
-  hello();
-
   return (
     <>
       <Sentry.ErrorBoundary fallback={FallbackComponent} showDialog>
