@@ -10,6 +10,9 @@ import {
 } from "./context/context";
 import Dashboard from "./pages/dashboard";
 
+import { init } from "@sentry/electron/renderer";
+import { init as reactInit } from "@sentry/react";
+
 const { getDatabase } = require("./rxdb/shared");
 const { getRxStorageMemory } = require("rxdb/plugins/storage-memory");
 const { getRxStorageIpcRenderer } = require("rxdb/plugins/electron");
@@ -21,12 +24,26 @@ import * as Sentry from "@sentry/react";
 function FallbackComponent() {
   return <div>An error has ocurred :</div>;
 }
+init(
+  {
+    /* config */
+    dsn: "https://6665e2d7b9174976b95b33e4ab69c2a2@o4505397808660480.ingest.sentry.io/4505397811740672",
+  },
+  reactInit
+);
 
 const App = () => {
   const [token, setToken] = React.useState("");
   const [url, setURL] = React.useState("");
   const [db, setDb] = React.useState(null);
   const [defaultSettings, setDefaultSettings] = React.useState(null);
+
+  init(
+    {
+      /* config */
+    },
+    reactInit
+  );
 
   React.useEffect(() => {
     (async () => {
@@ -42,6 +59,8 @@ const App = () => {
       await setDb(DB);
     })();
   }, []);
+
+  hello();
 
   return (
     <>
