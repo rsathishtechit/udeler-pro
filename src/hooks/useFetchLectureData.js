@@ -6,7 +6,10 @@ import { LANGUAGES, VIDEO_QUALITY } from "../constants/settings";
 export default function useFetchLectureData() {
   let { token } = useContext(UdemyContext);
   let { defaultSettings } = useContext(DefaultSettingsContext);
+
+  console.log(token, defaultSettings);
   const fetchLectureData = async (courseId, lectureId, type) => {
+    console.log("fetchLectureData");
     const lectureData = await fetch(
       `https://udemy.com/api-2.0/users/me/subscribed-courses/${courseId}/lectures/${lectureId}?fields[lecture]=asset,supplementary_assets&fields[asset]=stream_urls,download_urls,captions,title,filename,data,body,media_sources,media_license_token&q=${Date.now()}`,
       {

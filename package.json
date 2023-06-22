@@ -1,7 +1,7 @@
 {
   "name": "udeler-pro",
   "productName": "udeler-pro",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Udemy desktop client to download courses",
   "main": ".webpack/main",
   "scripts": {
