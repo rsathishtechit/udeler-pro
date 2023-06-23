@@ -29,7 +29,21 @@ const useAuth = () => {
     return true;
   };
 
-  return [addToken, fetchToken];
+  const removeToken = async () => {
+    const query = await db.auth.find({
+      selector: {
+        id: {
+          $eq: "1",
+        },
+      },
+    });
+
+    await query.remove();
+
+    return true;
+  };
+
+  return { addToken, fetchToken, removeToken };
 };
 
 export default useAuth;

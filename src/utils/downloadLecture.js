@@ -13,7 +13,6 @@ export default function downloadLecture(
   lectureData,
   num
 ) {
-  console.log("downloadLecture");
   mkdirp(sectionPath).then(async () => {
     const download = downloader.download(data, lecturePath);
 
@@ -84,14 +83,8 @@ export default function downloadLecture(
       if (fs.existsSync(download.filePath)) {
         download.destroy("end");
       }
-
-      // console.log("EVENT - Download " + error + " error !");
-      // console.log(download.error);
     });
-    download.on("progress", function (progress) {
-      console.log(download.getStats());
-      console.log("EVENT - Download " + num + " progress " + progress);
-    });
+    download.on("progress", function (progress) {});
     download.on("end", function () {
       dispatch({
         type: "completed",
@@ -104,7 +97,6 @@ export default function downloadLecture(
           status: 100,
         },
       }));
-      console.log("EVENT - Download " + num + " end " + download.status);
     });
   });
 }

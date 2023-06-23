@@ -5,15 +5,23 @@ import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { LANGUAGES, VIDEO_QUALITY } from "../constants/settings";
 import { ipcRenderer } from "electron";
-import { BarsArrowUpIcon, UsersIcon } from "@heroicons/react/20/solid";
+import useAuth from "../hooks/useAuth";
+
+import { UdemyContext } from "../context/context";
+import { useNavigate } from "react-router-dom";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 const Settings = () => {
+  const navigate = useNavigate();
+
   let { db } = useContext(DbContext);
   let { setDefaultSettings } = useContext(DefaultSettingsContext);
+  let { token, setToken } = useContext(UdemyContext);
+
+  const { removeToken } = useAuth();
 
   const [settings, setSettings] = useState({});
 
@@ -58,8 +66,13 @@ const Settings = () => {
         },
       })
       .exec();
-    console.log(response._data);
     setData(response);
+  };
+
+  const logout = async () => {
+    console.log("logout");
+    removeToken();
+    navigate("/");
   };
 
   useEffect(() => {
@@ -237,6 +250,7 @@ const Settings = () => {
           </Listbox>
         </>
       )}
+
       <hr className="my-3" />
 
       <div className="mt-2 flex rounded-md shadow-sm">
@@ -270,6 +284,19 @@ const Settings = () => {
             />
           </svg>
         </button>
+      </div>
+
+      <hr className="my-3" />
+
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        <div>
+          <button
+            onClick={logout}
+            className="flex w-full mb-5 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
+            Logout
+          </button>
+        </div>
       </div>
     </div>
   );

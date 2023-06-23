@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 
 import * as ReactDOM from "react-dom/client";
 import { HashRouter, Route, Routes } from "react-router-dom";
@@ -33,10 +33,10 @@ init(
 );
 
 const App = () => {
-  const [token, setToken] = React.useState("");
-  const [url, setURL] = React.useState("");
-  const [db, setDb] = React.useState(null);
-  const [defaultSettings, setDefaultSettings] = React.useState(null);
+  const [token, setToken] = useState("");
+  const [url, setURL] = useState("");
+  const [db, setDb] = useState(null);
+  const [defaultSettings, setDefaultSettings] = useState(null);
 
   init(
     {
@@ -45,18 +45,15 @@ const App = () => {
     reactInit
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     (async () => {
       const storage = getRxStorageIpcRenderer({
         key: "main-storage",
         statics: getRxStorageMemory().statics,
         ipcRenderer: ipcRenderer,
       });
-      const DB = await getDatabase(
-        "udelerpro", // we add a random timestamp in dev-mode to reset the database on each start
-        storage
-      );
-      await setDb(DB);
+      const DB = await getDatabase("udelerpro", storage);
+      if (DB) setDb(DB);
     })();
   }, []);
 

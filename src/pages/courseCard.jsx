@@ -27,7 +27,6 @@ export default function CourseCard({ course }) {
   const [fetchLectureData] = useFetchLectureData();
   const [open, setOpen] = useState(false);
 
-  console.log("courseData", courseData);
   const [lectureStatus, setLectureStatus] = useState({});
 
   let { token, url } = useContext(UdemyContext);
@@ -48,7 +47,6 @@ export default function CourseCard({ course }) {
   };
 
   const downloadCourse = async () => {
-    console.log("downloadCourse");
     dispatch({ type: "download" });
     dispatch({ type: "status" });
     dispatch({ type: "total", payload: lectureCount });
@@ -57,16 +55,11 @@ export default function CourseCard({ course }) {
       ? `${defaultSettings.downloadPath}/${course.title}`
       : join(homedir(), `Downloads/${course.title}`);
 
-    console.log(homePath);
-
     let num = 0;
 
     for (const section in courseData) {
-      console.log("Section Loop");
-
       num++;
       const sectionData = courseData[section];
-      // console.log("sectionData", sectionData);
 
       let sectionPath = join(
         homePath,
@@ -76,7 +69,6 @@ export default function CourseCard({ course }) {
       for (const lecture in sectionData.lectures) {
         const lectureData = sectionData.lectures[lecture];
         const type = sectionData.lectures[lecture].asset.asset_type;
-        console.log(type);
 
         setLectureStatus((prev) => ({
           ...prev,
@@ -84,7 +76,6 @@ export default function CourseCard({ course }) {
         }));
 
         const data = await fetchLectureData(course.id, lectureData.id, type);
-        console.log(data);
 
         let lecturePath = join(
           sectionPath,
@@ -119,7 +110,6 @@ export default function CourseCard({ course }) {
 
             writeStream.on("finish", () => {
               writeStream.close();
-              console.log("Subtitle Download Completed!");
             });
           });
         }

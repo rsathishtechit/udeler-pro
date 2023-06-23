@@ -2,10 +2,10 @@ import { createRxDatabase, addRxPlugin, isRxCollection } from "rxdb";
 import { RxDBQueryBuilderPlugin } from "rxdb/plugins/query-builder";
 import { RxDBDevModePlugin } from "rxdb/plugins/dev-mode";
 
-import { VIDEO_QUALITY, LANGUAGES } from "../constants/settings";
-
 addRxPlugin(RxDBQueryBuilderPlugin);
 addRxPlugin(RxDBDevModePlugin);
+
+import { VIDEO_QUALITY, LANGUAGES } from "../constants/settings";
 
 const authSchema = {
   title: "Auth Schema",
@@ -73,52 +73,58 @@ const courseSchema = {
   required: ["id"],
 };
 
+let db = false;
+
 async function getDatabase(name, storage) {
-  const db = await createRxDatabase({
-    name,
-    storage,
-    ignoreDuplicate: true,
-    multiInstance: false,
-    eventReduce: true,
-  });
+  if (!db) {
+    db = await createRxDatabase({
+      name,
+      storage,
+      ignoreDuplicate: true,
+      multiInstance: false,
+      eventReduce: true,
+    });
 
-  await db.addCollections({
-    settings: {
-      schema: settingsSchema,
-    },
-    courses: {
-      schema: courseSchema,
-    },
-    auth: {
-      schema: authSchema,
-    },
-  });
-
-  // db.settings.remove();
-  // db.settings.destroy();
-
-  // Checking for the existing records
-  const id = await db.settings
-    .findOne({
-      selector: {
-        id: {
-          $eq: "1",
-        },
+    await db.addCollections({
+      settings: {
+        schema: settingsSchema,
       },
-    })
-    .exec();
+      courses: {
+        schema: courseSchema,
+      },
+      auth: {
+        schema: authSchema,
+      },
+    });
 
-  // Inserting default settings if  settings not exist already
-  if (id === null && id?._data.id !== "1") {
-    const obj = {
-      id: "1",
-      videoQuality: VIDEO_QUALITY[2],
-      language: LANGUAGES[0],
-      downloadPath: "",
-    };
-    await db.settings.insert(obj);
+    // await db.settings.destroy();
+    // await db.courses.destroy();
+    // await db.auth.destroy();
+
+    // Checking for the existing records
+    if (db.settings) {
+      const id = await db.settings
+        .findOne({
+          selector: {
+            id: {
+              $eq: "1",
+            },
+          },
+        })
+        .exec();
+
+      // Inserting default settings if  settings not exist already
+      if (id === null && id?._data.id !== "1") {
+        const obj = {
+          id: "1",
+          videoQuality: VIDEO_QUALITY[2],
+          language: LANGUAGES[0],
+          downloadPath: "",
+        };
+        await db.settings.insert(obj);
+      }
+    }
   }
-
   return db;
 }
 

@@ -5,9 +5,8 @@ import { ipcRenderer } from "electron";
 import useAuth from "../hooks/useAuth";
 
 export default function Login() {
-  const { setToken } = useContext(UdemyContext);
   const navigate = useNavigate();
-  const [addToken] = useAuth();
+  const { addToken } = useAuth();
   const onLogin = async () => {
     const token = ipcRenderer.sendSync(
       "login",

@@ -2,13 +2,11 @@ import React, { useState, useEffect, useContext } from "react";
 import { UdemyContext } from "../context/context";
 
 export default function useFetchCourseData(courseId) {
-  console.log("useFetchCourseData");
   const [courseData, setCourseData] = useState([]);
   const [lectureCount, setLectureCount] = useState([]);
   let { token } = useContext(UdemyContext);
 
   const fetchCourseData = async () => {
-    console.log("fetchCourseData API CAll");
     await fetch(
       `https://www.udemy.com/api-2.0/courses/${courseId}/cached-subscriber-curriculum-items?page_size=10000&q=${Date.now()}`,
       {

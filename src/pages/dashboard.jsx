@@ -29,8 +29,8 @@ function courseReducer(state = initialState, action) {
 
 const Dashboard = () => {
   const [state, dispatch] = useReducer(courseReducer, initialState);
-  let { token, setToken } = useContext(UdemyContext);
-  const [_, fetchToken] = useAuth();
+  let { token } = useContext(UdemyContext);
+  const { fetchToken } = useAuth();
 
   const [loading, setLoading] = useState(true);
 
@@ -54,10 +54,8 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    console.log(token);
     if (token.length) {
       loadCourses();
-
       if (state.courses) {
         setLoading(false);
       }
@@ -93,6 +91,17 @@ const Dashboard = () => {
                         </li>
                       ))}
                   </ul>
+                  <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+                    <div>
+                      <button
+                        onClick={loadCourses}
+                        type="submit"
+                        className="flex w-full mb-5 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      >
+                        Load more courses
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
