@@ -2,13 +2,13 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const cookie = require("cookie");
 
-const { getRxStorageMemory } = require("rxdb/plugins/storage-memory");
-const { exposeIpcMainRxStorage } = require("rxdb/plugins/electron");
-
 const { dialog } = require("electron");
 
 import { join } from "path";
 const { homedir } = require("os");
+
+// Import database operations
+const db = require("./db/sqlite-main");
 
 import * as Sentry from "@sentry/electron";
 
@@ -76,13 +76,12 @@ const createWindow = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async function () {
-  const storage = getRxStorageMemory();
+  // Initialize database
+  const userDataPath = app.getPath("userData");
+  db.initDatabase(userDataPath);
 
-  exposeIpcMainRxStorage({
-    key: "main-storage",
-    storage,
-    ipcMain: ipcMain,
-  });
+  // Set up database IPC handlers
+  setupDatabaseIPC();
 
   createWindow();
 
@@ -94,6 +93,104 @@ app.on("ready", async function () {
     event.returnValue = path;
   });
 });
+
+/**
+ * Set up IPC handlers for database operations
+ */
+function setupDatabaseIPC() {
+  // Auth operations
+  ipcMain.on("db-auth-insert", (event, data) => {
+    try {
+      const result = db.authInsert(data);
+      event.returnValue = { success: true, data: result };
+    } catch (error) {
+      event.returnValue = { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.on("db-auth-find-one", (event, id) => {
+    try {
+      const result = db.authFindOne(id);
+      event.returnValue = { success: true, data: result };
+    } catch (error) {
+      event.returnValue = { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.on("db-auth-remove", (event, id) => {
+    try {
+      const result = db.authRemove(id);
+      event.returnValue = { success: true, data: result };
+    } catch (error) {
+      event.returnValue = { success: false, error: error.message };
+    }
+  });
+
+  // Settings operations
+  ipcMain.on("db-settings-find-one", (event, id) => {
+    try {
+      const result = db.settingsFindOne(id);
+      event.returnValue = { success: true, data: result };
+    } catch (error) {
+      event.returnValue = { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.on("db-settings-update", (event, data) => {
+    try {
+      const result = db.settingsUpdate(data);
+      event.returnValue = { success: true, data: result };
+    } catch (error) {
+      event.returnValue = { success: false, error: error.message };
+    }
+  });
+
+  // Courses operations
+  ipcMain.on("db-courses-insert", (event, data) => {
+    try {
+      const result = db.coursesInsert(data);
+      event.returnValue = { success: true, data: result };
+    } catch (error) {
+      event.returnValue = { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.on("db-courses-find-one", (event, id) => {
+    try {
+      const result = db.coursesFindOne(id);
+      event.returnValue = { success: true, data: result };
+    } catch (error) {
+      event.returnValue = { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.on("db-courses-find", (event) => {
+    try {
+      const result = db.coursesFind();
+      event.returnValue = { success: true, data: result };
+    } catch (error) {
+      event.returnValue = { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.on("db-courses-update", (event, id, data) => {
+    try {
+      const result = db.coursesUpdate(id, data);
+      event.returnValue = { success: true, data: result };
+    } catch (error) {
+      event.returnValue = { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.on("db-courses-remove", (event, id) => {
+    try {
+      const result = db.coursesRemove(id);
+      event.returnValue = { success: true, data: result };
+    } catch (error) {
+      event.returnValue = { success: false, error: error.message };
+    }
+  });
+}
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

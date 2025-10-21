@@ -1,14 +1,8 @@
 import React, { useContext, useEffect, useReducer, useState } from "react";
 import { UdemyContext } from "../context/context";
 import CourseCard from "./courseCard";
-
-const { addRxPlugin } = require("rxdb");
-
-import { RxDBUpdatePlugin } from "rxdb/plugins/update";
 import Settings from "./settings";
 import useAuth from "../hooks/useAuth";
-
-addRxPlugin(RxDBUpdatePlugin);
 
 const initialState = {
   page: 1,

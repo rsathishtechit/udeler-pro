@@ -12,13 +12,7 @@ import Dashboard from "./pages/dashboard";
 
 import { init } from "@sentry/electron/renderer";
 import { init as reactInit } from "@sentry/react";
-
-const { getDatabase } = require("./rxdb/shared");
-const { getRxStorageMemory } = require("rxdb/plugins/storage-memory");
-const { getRxStorageIpcRenderer } = require("rxdb/plugins/electron");
-
-const { ipcRenderer } = require("electron");
-
+import { getDatabase } from "./db/sqlite-renderer.js";
 import * as Sentry from "@sentry/react";
 
 function FallbackComponent() {
@@ -47,12 +41,7 @@ const App = () => {
 
   useEffect(() => {
     (async () => {
-      const storage = getRxStorageIpcRenderer({
-        key: "main-storage",
-        statics: getRxStorageMemory().statics,
-        ipcRenderer: ipcRenderer,
-      });
-      const DB = await getDatabase("udelerpro", storage);
+      const DB = getDatabase();
       if (DB) setDb(DB);
     })();
   }, []);
