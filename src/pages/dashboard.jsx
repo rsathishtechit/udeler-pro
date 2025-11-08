@@ -67,47 +67,51 @@ const Dashboard = () => {
   return (
     <>
       {loading ? (
-        <>Loading</>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="flex flex-col items-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <p className="mt-4 text-lg font-medium text-gray-700">
+              Loading your courses...
+            </p>
+          </div>
+        </div>
       ) : (
-        <>
-          <div className="flex min-h-full flex-col">
-            {/* 3 column wrapper */}
-            <div className="w-full grow lg:flex xl:px-2">
-              {/* Left sidebar & main wrapper */}
-              <div className="flex-1 xl:flex px-4 py-6 sm:px-6 lg:pr-8 xl:pr-6">
-                <Settings />
-                <div className="px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
-                  <ul role="list" className="divide-y divide-gray-200 shadow">
-                    {state.courses.length &&
-                      state.courses.map((course) => (
-                        <li key={course.id} className="shadow mt-2 ml-2 mr-2">
-                          <CourseCard course={course} />
-                        </li>
-                      ))}
-                  </ul>
-                  <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                    <div>
-                      <button
-                        onClick={loadCourses}
-                        type="submit"
-                        className="flex w-full mb-5 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                      >
-                        Load more courses
-                      </button>
-                    </div>
-                  </div>
+        <div className="min-h-screen bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex flex-col lg:flex-row gap-8">
+              <div className="lg:w-1/4">
+                <div className="bg-white rounded-xl shadow-sm p-6 sticky top-8">
+                  <Settings />
                 </div>
               </div>
 
-              <div className="shrink-0 border-t border-gray-200 px-4 py-6 sm:px-6 lg:w-96 lg:border-l lg:border-t-0 lg:pr-8 xl:pr-6">
-                <div
-                  id="status"
-                  className="border-b border-gray-900/10 pb-12"
-                ></div>
+              <div className="lg:w-3/4">
+                <div className="grid gap-6">
+                  {state.courses.length > 0 ? (
+                    state.courses.map((course) => (
+                      <div key={course.id}>
+                        <CourseCard course={course} />
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-12">
+                      <p className="text-gray-500">No courses found</p>
+                    </div>
+                  )}
+
+                  {state.courses.length > 0 && (
+                    <button
+                      onClick={loadCourses}
+                      className="w-full px-4 py-3 text-base font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+                    >
+                      Load more courses
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );

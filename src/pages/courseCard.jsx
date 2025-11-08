@@ -26,9 +26,7 @@ export default function CourseCard({ course }) {
   const [courseData, lectureCount] = useFetchCourseData(course.id);
   const [fetchLectureData] = useFetchLectureData();
   const [open, setOpen] = useState(false);
-
   const [lectureStatus, setLectureStatus] = useState({});
-
   let { token, url } = useContext(UdemyContext);
   let { defaultSettings } = useContext(DefaultSettingsContext);
 
@@ -148,121 +146,158 @@ export default function CourseCard({ course }) {
   };
 
   return (
-    <div className="flex-coulumn gap-x-4">
-      <div className="flex-1 ">
-        <div className="flex gap-x-4">
-          <img
-            className="h-32 w-auto border border-gray-300 bg-white text-gray-300"
-            src={course.image_480x270}
-            alt=""
-          />
-
-          <div className="flex-2 py-4 ">
-            <h4 className="text-lg font-bold">{course.title}</h4>
-            <span className="isolate inline-flex rounded-md shadow-sm">
-              <button
-                type="button"
-                className="relative inline-flex items-center rounded-l-md bg-white px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 disabled:opacity-25"
-                onClick={downloadCourse}
-                disabled={downloadState.download}
-              >
-                <span className="sr-only">Download</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
-                  />
-                </svg>
-              </button>
-
-              <button
-                type="button"
-                className="relative -ml-px inline-flex items-center rounded-r-md bg-white px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 disabled:opacity-25"
-                onClick={pauseDownload}
-                disabled={downloadState.pause}
-              >
-                <span className="sr-only">Pause</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 5.25v13.5m-7.5-13.5v13.5"
-                  />
-                </svg>
-              </button>
-
-              <button
-                type="button"
-                className="relative -ml-px inline-flex items-center rounded-r-md bg-white px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 disabled:opacity-25"
-                onClick={resumeDownload}
-                disabled={downloadState.resume}
-              >
-                <span className="sr-only">Resume</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-                  />
-                </svg>
-              </button>
-              <button
-                type="button"
-                className="relative -ml-px inline-flex items-center rounded-r-md bg-white px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 disabled:opacity-25"
-                onClick={() => {
-                  setOpen(true);
-                }}
-                disabled={downloadState.status}
-              >
-                <span className="sr-only">Detail</span>
-                <svg
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z"></path>
-                </svg>
-              </button>
-            </span>
-          </div>
-
-          <div className="flex-1 justify-items-end py-4 px-4">
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-all duration-200">
+      <div className="p-6">
+        <div className="flex gap-6">
+          <div className="relative group flex-shrink-0">
+            <img
+              className="h-40 w-72 object-cover rounded-lg shadow-sm transition-transform duration-200 group-hover:scale-105"
+              src={course.image_480x270}
+              alt={course.title}
+            />
             {downloadState.download && (
-              <div style={{ width: 50, height: 50, float: "right" }}>
-                <CircularProgressbar
-                  value={downloadState.completedPercentage}
-                  text={parseInt(downloadState.completedPercentage) + "%"}
-                />
+              <div className="absolute bottom-2 right-2 bg-white rounded-full p-1.5 shadow-lg">
+                <div className="w-10 h-10">
+                  <CircularProgressbar
+                    value={downloadState.completedPercentage}
+                    text={`${parseInt(downloadState.completedPercentage)}%`}
+                    styles={{
+                      path: { stroke: "#4f46e5" },
+                      text: {
+                        fill: "#4f46e5",
+                        fontSize: "28px",
+                        fontWeight: "bold",
+                      },
+                    }}
+                  />
+                </div>
               </div>
             )}
           </div>
+
+          <div className="flex-1 min-w-0">
+            <h3 className="text-xl font-bold text-gray-900 mb-4 line-clamp-2">
+              {course.title}
+            </h3>
+            <div className="flex flex-wrap gap-3 mt-4">
+              <button
+                type="button"
+                className={`inline-flex items-center px-4 py-2.5 rounded-lg text-sm font-medium ${
+                  downloadState.download
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                } transition-colors duration-200`}
+                onClick={downloadCourse}
+                disabled={downloadState.download}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                Download Course
+              </button>
+
+              <button
+                type="button"
+                className={`inline-flex items-center p-2.5 rounded-lg border ${
+                  downloadState.pause
+                    ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                } transition-colors duration-200`}
+                onClick={pauseDownload}
+                disabled={downloadState.pause}
+                title="Pause Download"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                className={`inline-flex items-center p-2.5 rounded-lg border ${
+                  downloadState.resume
+                    ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                } transition-colors duration-200`}
+                onClick={resumeDownload}
+                disabled={downloadState.resume}
+                title="Resume Download"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                className={`inline-flex items-center p-2.5 rounded-lg border ${
+                  downloadState.status
+                    ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                } transition-colors duration-200`}
+                onClick={() => setOpen(true)}
+                disabled={downloadState.status}
+                title="View Details"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+
       {lectureStatus && (
         <CoureseDetail
           open={open}

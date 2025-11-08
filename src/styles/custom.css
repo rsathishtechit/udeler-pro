@@ -1,9 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Import custom styles */
-@import "./styles/app.css";
+/* Custom styles for Udeler Pro */
 
 @layer components {
   .card {
